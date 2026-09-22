@@ -1,0 +1,37 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{Best and Worst (Model, Strategy) Combination per Dataset -- F1}, across all 50 model-family$\times$strategy combinations. $^\dagger$Below the utility-based $F_1^\phi$ floor ($<10^{-4}$).}
+\label{tab:exp002_f1_best_worst}
+\vspace{4pt}
+\noindent
+\makebox[\textwidth][c]{%
+\resizebox{1.15\textwidth}{!}{%
+\begin{tabular}{lllll}
+\toprule
+\textbf{Dataset} & \textbf{Best Combo} & \textbf{Best F1} & \textbf{Worst Combo} & \textbf{Worst F1} \\
+\midrule
+DS01 (Bike Daily Temp) & \texttt{LM.OVERTPhi} & 0.5394 & \texttt{SVM.baseline} & $2.0000 \times 10^{-5}$$^\dagger$ \\
+DS02 (Bike Daily Humidity) & \texttt{LM.UNDERB} & 0.5947 & \texttt{RF.baseline} & $2.0000 \times 10^{-5}$$^\dagger$ \\
+DS03 (Bike Daily Windspeed) & \texttt{LM.OVERTPhi} & 0.6430 & \texttt{SVM.baseline} & $2.0000 \times 10^{-5}$$^\dagger$ \\
+DS04 (Bike Daily Count) & \texttt{SVM.baseline} & 0.6001 & \texttt{MARS.UNDERTPhi} & 0.4457 \\
+DS05 (Bike Hourly Temp) & \texttt{RF.UNDERB} & 0.5555 & \texttt{LM.baseline} & 0.3457 \\
+DS06 (Bike Hourly Humidity) & \texttt{RF.UNDERTPhi} & 0.4827 & \texttt{LM.baseline} & $1.9999 \times 10^{-5}$$^\dagger$ \\
+DS07 (Bike Hourly Windspeed) & \texttt{RF.UNDERTPhi} & 0.5667 & \texttt{SVM.baseline} & 0.2970 \\
+DS08 (Bike Hourly Count) & \texttt{RF.SMOTEB} & 0.7162 & \texttt{LM.SMOTEB} & 0.4737 \\
+DS09 (Icelandic River Flow) & \texttt{RPART.UNDERTPhi} & 0.2881 & \texttt{RF.baseline} & 0.2352 \\
+DS10 (Porto Min Temp) & \texttt{LM.OVERB} & 0.6685 & \texttt{RF.baseline} & $2.0000 \times 10^{-5}$$^\dagger$ \\
+DS11 (Porto Max Temp) & \texttt{SVM.SMOTEB} & 0.4880 & \texttt{SVM.baseline} & 0.0615 \\
+DS12 (Porto Max Steady Wind) & \texttt{LM.OVERT} & 0.5733 & \texttt{RF.baseline} & $2.0000 \times 10^{-5}$$^\dagger$ \\
+DS13 (Porto Max Wind Gust) & \texttt{LM.OVERT} & 0.6271 & \texttt{LM.baseline} & 0.3689 \\
+DS14 (Istanbul S\&P) & \texttt{RF.SMOTEB} & 0.3995 & \texttt{LM.baseline} & $1.9999 \times 10^{-5}$$^\dagger$ \\
+DS15 (Istanbul DAX) & \texttt{RPART.UNDERT} & 0.3841 & \texttt{LM.baseline} & $1.9999 \times 10^{-5}$$^\dagger$ \\
+DS16 (Istanbul FTSE) & \texttt{SVM.OVERT} & 0.3984 & \texttt{SVM.baseline} & $1.9999 \times 10^{-5}$$^\dagger$ \\
+DS17 (Istanbul Nikkei) & \texttt{RPART.baseline} & 0.4412 & \texttt{SVM.baseline} & $1.9999 \times 10^{-5}$$^\dagger$ \\
+DS18 (Istanbul Bovespa) & \texttt{SVM.SMOTETPhi} & 0.3931 & \texttt{RF.baseline} & $1.9999 \times 10^{-5}$$^\dagger$ \\
+DS19 (Istanbul EU) & \texttt{LM.OVERTPhi} & 0.3659 & \texttt{LM.baseline} & $1.9999 \times 10^{-5}$$^\dagger$ \\
+DS20 (Istanbul EM) & \texttt{RF.SMOTEB} & 0.3783 & \texttt{LM.baseline} & $1.9999 \times 10^{-5}$$^\dagger$ \\
+\bottomrule
+\end{tabular}%
+}%
+}
+\end{table*}

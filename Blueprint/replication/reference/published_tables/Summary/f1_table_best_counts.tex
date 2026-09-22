@@ -1,0 +1,24 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{F1 Best-Strategy Win Counts by Model Family}, counting how often each resampling strategy is the best performer for a dataset (ties split evenly), across the 20 datasets. Total row sums across all 5 model families.}
+\label{tab:exp002_f1_win_counts}
+\vspace{4pt}
+\noindent
+\makebox[\textwidth][c]{%
+\resizebox{1.15\textwidth}{!}{%
+\begin{tabular}{lcccccccccc}
+\toprule
+\textbf{Model Family} & \textbf{Baseline} & \textbf{\texttt{UNDERB}} & \textbf{\texttt{UNDERT}} & \textbf{\texttt{UNDERTPhi}} & \textbf{\texttt{OVERB}} & \textbf{\texttt{OVERT}} & \textbf{\texttt{OVERTPhi}} & \textbf{\texttt{SMOTEB}} & \textbf{\texttt{SMOTET}} & \textbf{\texttt{SMOTETPhi}} \\
+\midrule
+Linear Model (LM) & 3.0 & 1.0 & 0.0 & 0.0 & 1.0 & 1.5 & 4.5 & 5.0 & 2.0 & 2.0 \\
+SVM & 2.0 & 4.0 & 1.0 & 3.0 & 1.0 & 1.5 & 2.5 & 4.0 & 0.0 & 1.0 \\
+MARS & 2.0 & 1.0 & 0.0 & 2.0 & 2.0 & 0.0 & 3.0 & 6.0 & 2.0 & 2.0 \\
+Random Forest (RF) & 0.0 & 1.0 & 1.0 & 4.0 & 1.0 & 0.0 & 0.0 & 6.0 & 2.0 & 5.0 \\
+CART (RPART) & 4.5 & 1.5 & 1.0 & 4.0 & 1.0 & 1.0 & 2.0 & 3.0 & 1.0 & 1.0 \\
+\midrule
+\textbf{Total} & 11.5 & 8.5 & 3.0 & 13.0 & 6.0 & 4.0 & 12.0 & 24.0 & 7.0 & 11.0 \\
+\bottomrule
+\end{tabular}%
+}%
+}
+\end{table*}

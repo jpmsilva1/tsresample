@@ -1,0 +1,16 @@
+workflow,model_family,strategy,Win,sigWin,Loss,SigLoss,Tie
+mc.lm_UNDERB,lm,UNDERB,1,1,0,0,0
+mc.lm_OVERB,lm,OVERB,1,1,0,0,0
+mc.lm_SMOTEB,lm,SMOTEB,1,1,0,0,0
+mc.svm_UNDERB,svm,UNDERB,1,1,0,0,0
+mc.svm_OVERB,svm,OVERB,1,1,0,0,0
+mc.svm_SMOTEB,svm,SMOTEB,1,1,0,0,0
+mc.mars_UNDERB,mars,UNDERB,1,1,0,0,0
+mc.mars_OVERB,mars,OVERB,1,1,0,0,0
+mc.mars_SMOTEB,mars,SMOTEB,1,1,0,0,0
+mc.rf_UNDERB,rf,UNDERB,1,1,0,0,0
+mc.rf_OVERB,rf,OVERB,1,1,0,0,0
+mc.rf_SMOTEB,rf,SMOTEB,1,1,0,0,0
+mc.rpart_UNDERB,rpart,UNDERB,1,0,0,0,0
+mc.rpart_OVERB,rpart,OVERB,0,0,1,1,0
+mc.rpart_SMOTEB,rpart,SMOTEB,1,0,0,0,0

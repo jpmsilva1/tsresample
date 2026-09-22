@@ -1,0 +1,110 @@
+=== F1: pooled causal effect (tau_k vs. baseline) ===
+Randomization inference, permutation within (dataset, model_family) blocks,
+N_perm=10000. Holm-adjusted p controls the family-wise error across
+these 9 strategies (confirmatory). Point estimate = mean paired difference
+across all 100 blocks; identical to the two-way FE OLS coefficient under
+this design's full balance.
+
+              tau  p_value  p_holm
+OVERB      0.1851   0.0001  0.0009
+OVERT      0.1819   0.0001  0.0009
+OVERTPhi   0.1817   0.0001  0.0009
+SMOTEB     0.2205   0.0001  0.0009
+SMOTET     0.2155   0.0001  0.0009
+SMOTETPhi  0.2177   0.0001  0.0009
+UNDERB     0.1805   0.0001  0.0009
+UNDERT     0.1839   0.0001  0.0009
+UNDERTPhi  0.1899   0.0001  0.0009
+
+=== Leave-one-source-out jackknife (pooled tau_k) ===
+The 20 datasets are 5 sources (see plan): dropping an entire source and
+recomputing tau_k shows how much of the pooled effect any single source
+(esp. the 7-dataset Istanbul Stock Exchange block) is carrying.
+
+strategy          OVERB   OVERT  OVERTPhi  SMOTEB  SMOTET  SMOTETPhi  UNDERB  UNDERT  UNDERTPhi
+bike_daily       0.1739  0.1729    0.1719  0.2110  0.2051     0.2074  0.1626  0.1673     0.1739
+bike_hourly      0.2041  0.2005    0.2004  0.2446  0.2403     0.2426  0.1952  0.1995     0.2058
+icelandic_river  0.1947  0.1912    0.1910  0.2312  0.2258     0.2282  0.1897  0.1932     0.1995
+istanbul_stock   0.1815  0.1782    0.1785  0.2058  0.2017     0.2039  0.1982  0.1985     0.2037
+porto_weather    0.1686  0.1642    0.1646  0.2052  0.1999     0.2017  0.1585  0.1622     0.1675
+
+=== Sensitivity: pooled tau_k excluding the SVM family ===
+cap_svm_train() bundles a training-window truncation into the SVM
+OVER/SMOTE arms (see plan). If dropping svm barely moves tau_k, that
+co-treatment isn't driving the pooled conclusion.
+
+              tau  p_value  p_holm
+OVERB      0.1512   0.0001  0.0009
+OVERT      0.1464   0.0001  0.0009
+OVERTPhi   0.1468   0.0001  0.0009
+SMOTEB     0.1935   0.0001  0.0009
+SMOTET     0.1887   0.0001  0.0009
+SMOTETPhi  0.1917   0.0001  0.0009
+UNDERB     0.1441   0.0001  0.0009
+UNDERT     0.1480   0.0001  0.0009
+UNDERTPhi  0.1540   0.0001  0.0009
+
+=== Distribution-free secondary estimand (win probability + rank shift) ===
+F1's raw mean is partly a floor artifact (baseline F1 approx 0 on most
+datasets). win_prob = P(strategy beats baseline on a random block);
+avg_rank reuses cd_stats.average_ranks (rank 1 = best of the 10 strategies).
+
+           win_prob  avg_rank
+strategy                     
+OVERB          0.83     5.420
+OVERT          0.82     5.665
+OVERTPhi       0.83     5.655
+SMOTEB         0.82     4.160
+SMOTET         0.84     5.020
+SMOTETPhi      0.85     4.880
+UNDERB         0.82     5.660
+UNDERT         0.81     5.300
+UNDERTPhi      0.82     4.800
+
+=== Per-family effects (exploratory, NOT multiplicity-adjusted) ===
+     strategy     tau  p_value model_family
+0       OVERB  0.3052   0.0001           lm
+1       OVERT  0.3067   0.0001           lm
+2    OVERTPhi  0.3074   0.0001           lm
+3      SMOTEB  0.3181   0.0001           lm
+4      SMOTET  0.3140   0.0001           lm
+5   SMOTETPhi  0.3105   0.0001           lm
+6      UNDERB  0.3063   0.0001           lm
+7      UNDERT  0.3126   0.0001           lm
+8   UNDERTPhi  0.3145   0.0001           lm
+9       OVERB  0.3204   0.0001          svm
+10      OVERT  0.3238   0.0001          svm
+11   OVERTPhi  0.3216   0.0001          svm
+12     SMOTEB  0.3286   0.0001          svm
+13     SMOTET  0.3228   0.0001          svm
+14  SMOTETPhi  0.3215   0.0001          svm
+15     UNDERB  0.3261   0.0001          svm
+16     UNDERT  0.3277   0.0001          svm
+17  UNDERTPhi  0.3335   0.0001          svm
+18      OVERB  0.1622   0.0001         mars
+19      OVERT  0.1605   0.0001         mars
+20   OVERTPhi  0.1590   0.0001         mars
+21     SMOTEB  0.1621   0.0001         mars
+22     SMOTET  0.1568   0.0001         mars
+23  SMOTETPhi  0.1601   0.0001         mars
+24     UNDERB  0.0762   0.0031         mars
+25     UNDERT  0.0841   0.0012         mars
+26  UNDERTPhi  0.0906   0.0009         mars
+27      OVERB  0.1180   0.0024           rf
+28      OVERT  0.0973   0.0133           rf
+29   OVERTPhi  0.0996   0.0107           rf
+30     SMOTEB  0.2729   0.0001           rf
+31     SMOTET  0.2674   0.0001           rf
+32  SMOTETPhi  0.2752   0.0001           rf
+33     UNDERB  0.1715   0.0001           rf
+34     UNDERT  0.1730   0.0001           rf
+35  UNDERTPhi  0.1852   0.0001           rf
+36      OVERB  0.0195   0.0012        rpart
+37      OVERT  0.0212   0.0006        rpart
+38   OVERTPhi  0.0211   0.0007        rpart
+39     SMOTEB  0.0209   0.0015        rpart
+40     SMOTET  0.0164   0.0066        rpart
+41  SMOTETPhi  0.0211   0.0008        rpart
+42     UNDERB  0.0224   0.0002        rpart
+43     UNDERT  0.0223   0.0003        rpart
+44  UNDERTPhi  0.0259   0.0001        rpart

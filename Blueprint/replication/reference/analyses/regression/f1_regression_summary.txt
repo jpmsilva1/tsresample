@@ -1,0 +1,64 @@
+=== F1: strategy effect (dataset + family FE, SE clustered by dataset) ===
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                  value   R-squared:                       0.707
+Model:                            OLS   Adj. R-squared:                  0.698
+Method:                 Least Squares   F-statistic:                     27.71
+Date:                Fri, 28 Aug 2026   Prob (F-statistic):           1.38e-09
+Time:                        21:33:18   Log-Likelihood:                 1027.2
+No. Observations:                1000   AIC:                            -1988.
+Df Residuals:                     967   BIC:                            -1826.
+Df Model:                          32                                         
+Covariance Type:              cluster                                         
+===================================================================================================================
+                                                      coef    std err          z      P>|z|      [0.025      0.975]
+-------------------------------------------------------------------------------------------------------------------
+Intercept                                           0.2733      0.022     12.308      0.000       0.230       0.317
+C(strategy, Treatment('baseline'))[T.OVERB]         0.1851      0.027      6.820      0.000       0.132       0.238
+C(strategy, Treatment('baseline'))[T.OVERT]         0.1819      0.027      6.764      0.000       0.129       0.235
+C(strategy, Treatment('baseline'))[T.OVERTPhi]      0.1817      0.027      6.714      0.000       0.129       0.235
+C(strategy, Treatment('baseline'))[T.SMOTEB]        0.2205      0.031      7.130      0.000       0.160       0.281
+C(strategy, Treatment('baseline'))[T.SMOTET]        0.2155      0.031      7.030      0.000       0.155       0.276
+C(strategy, Treatment('baseline'))[T.SMOTETPhi]     0.2177      0.031      6.948      0.000       0.156       0.279
+C(strategy, Treatment('baseline'))[T.UNDERB]        0.1805      0.030      6.080      0.000       0.122       0.239
+C(strategy, Treatment('baseline'))[T.UNDERT]        0.1839      0.029      6.242      0.000       0.126       0.242
+C(strategy, Treatment('baseline'))[T.UNDERTPhi]     0.1899      0.031      6.208      0.000       0.130       0.250
+C(dataset_id)[T.DS02]                               0.0124   4.24e-16   2.92e+13      0.000       0.012       0.012
+C(dataset_id)[T.DS03]                               0.0484   2.16e-16   2.24e+14      0.000       0.048       0.048
+C(dataset_id)[T.DS04]                               0.1005    2.8e-16   3.59e+14      0.000       0.100       0.100
+C(dataset_id)[T.DS05]                               0.0646   4.88e-16   1.32e+14      0.000       0.065       0.065
+C(dataset_id)[T.DS06]                              -0.0173   3.57e-16  -4.85e+13      0.000      -0.017      -0.017
+C(dataset_id)[T.DS07]                               0.0924   2.81e-16   3.29e+14      0.000       0.092       0.092
+C(dataset_id)[T.DS08]                               0.1844   2.09e-16   8.84e+14      0.000       0.184       0.184
+C(dataset_id)[T.DS09]                              -0.1749   2.58e-16  -6.78e+14      0.000      -0.175      -0.175
+C(dataset_id)[T.DS10]                               0.1353   5.05e-16   2.68e+14      0.000       0.135       0.135
+C(dataset_id)[T.DS11]                              -0.0213   1.52e-16   -1.4e+14      0.000      -0.021      -0.021
+C(dataset_id)[T.DS12]                              -0.0108   2.65e-16  -4.05e+13      0.000      -0.011      -0.011
+C(dataset_id)[T.DS13]                               0.1239   4.68e-16   2.65e+14      0.000       0.124       0.124
+C(dataset_id)[T.DS14]                              -0.1068   2.06e-16  -5.18e+14      0.000      -0.107      -0.107
+C(dataset_id)[T.DS15]                              -0.1660   1.37e-16  -1.21e+15      0.000      -0.166      -0.166
+C(dataset_id)[T.DS16]                              -0.1454   2.87e-16  -5.07e+14      0.000      -0.145      -0.145
+C(dataset_id)[T.DS17]                              -0.1263   2.44e-16  -5.18e+14      0.000      -0.126      -0.126
+C(dataset_id)[T.DS18]                              -0.1635   1.52e-16  -1.08e+15      0.000      -0.164      -0.164
+C(dataset_id)[T.DS19]                              -0.1635   2.16e-16  -7.57e+14      0.000      -0.163      -0.163
+C(dataset_id)[T.DS20]                              -0.1600   1.63e-16  -9.81e+14      0.000      -0.160      -0.160
+C(model_family)[T.mars]                            -0.0172      0.012     -1.389      0.165      -0.041       0.007
+C(model_family)[T.rf]                              -0.0798      0.026     -3.074      0.002      -0.131      -0.029
+C(model_family)[T.rpart]                            0.0090      0.016      0.571      0.568      -0.022       0.040
+C(model_family)[T.svm]                              0.0072      0.008      0.874      0.382      -0.009       0.023
+==============================================================================
+Omnibus:                      161.284   Durbin-Watson:                   1.302
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              413.893
+Skew:                          -0.853   Prob(JB):                     1.33e-90
+Kurtosis:                       5.650   Cond. No.                         23.4
+==============================================================================
+
+Notes:
+[1] Standard Errors are robust to cluster correlation (cluster)
+
+=== F1: strategy x family interaction, joint F-test ===
+F = 6.748, p = 5.914e-05 (36 interaction terms)
+A significant p means the strategy effect genuinely differs by model
+family (matches the per-family split already visible across the 15
+Bayes charts / 15 CD diagrams) -- the pooled coefficients above then
+describe an average effect that no single family actually experiences.

@@ -1,0 +1,26 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{Causal Effect on $F_1^\phi$ vs.\ Baseline} (pooled across 20 datasets $\times$ 5 model families, $N{=}100$ blocks). $\tau_k$ = mean paired difference; bold indicates Holm-significant at $\alpha{=}0.05$. Win Prob.\ and Avg.\ Rank are the distribution-free secondary estimand (Section~4.1).}
+\label{tab:causal_f1_pooled}
+\vspace{4pt}
+\noindent
+\makebox[\textwidth][c]{%
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Strategy} & \textbf{$\tau_k$} & \textbf{95\% CI} & \textbf{RI $p$} & \textbf{Holm $p$} & \textbf{Win Prob.} & \textbf{Avg. Rank} \\
+\midrule
+\texttt{UNDERB} & \textbf{0.1805} & [0.1422, 0.2179] & $<0.001$ & $<0.001$ & 0.82 & 5.66 \\
+\texttt{UNDERT} & \textbf{0.1839} & [0.1463, 0.2218] & $<0.001$ & $<0.001$ & 0.81 & 5.30 \\
+\texttt{UNDERTPhi} & \textbf{0.1899} & [0.1523, 0.2290] & $<0.001$ & $<0.001$ & 0.82 & 4.80 \\
+\texttt{OVERB} & \textbf{0.1851} & [0.1489, 0.2222] & $<0.001$ & $<0.001$ & 0.83 & 5.42 \\
+\texttt{OVERT} & \textbf{0.1819} & [0.1455, 0.2190] & $<0.001$ & $<0.001$ & 0.82 & 5.67 \\
+\texttt{OVERTPhi} & \textbf{0.1817} & [0.1456, 0.2189] & $<0.001$ & $<0.001$ & 0.83 & 5.66 \\
+\texttt{SMOTEB} & \textbf{0.2205} & [0.1838, 0.2575] & $<0.001$ & $<0.001$ & 0.82 & 4.16 \\
+\texttt{SMOTET} & \textbf{0.2155} & [0.1792, 0.2519] & $<0.001$ & $<0.001$ & 0.84 & 5.02 \\
+\texttt{SMOTETPhi} & \textbf{0.2177} & [0.1809, 0.2546] & $<0.001$ & $<0.001$ & 0.85 & 4.88 \\
+\bottomrule
+\end{tabular}%
+}%
+}
+\end{table*}

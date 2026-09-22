@@ -1,0 +1,64 @@
+=== SERA (log): strategy effect (dataset + family FE, SE clustered by dataset) ===
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:               log_sera   R-squared:                       0.997
+Model:                            OLS   Adj. R-squared:                  0.997
+Method:                 Least Squares   F-statistic:                     83.54
+Date:                Fri, 28 Aug 2026   Prob (F-statistic):           6.33e-14
+Time:                        21:33:18   Log-Likelihood:                -474.07
+No. Observations:                1000   AIC:                             1014.
+Df Residuals:                     967   BIC:                             1176.
+Df Model:                          32                                         
+Covariance Type:              cluster                                         
+===================================================================================================================
+                                                      coef    std err          z      P>|z|      [0.025      0.975]
+-------------------------------------------------------------------------------------------------------------------
+Intercept                                          -1.5464      0.059    -26.057      0.000      -1.663      -1.430
+C(strategy, Treatment('baseline'))[T.OVERB]         0.0698      0.050      1.394      0.163      -0.028       0.168
+C(strategy, Treatment('baseline'))[T.OVERT]         0.0645      0.038      1.693      0.090      -0.010       0.139
+C(strategy, Treatment('baseline'))[T.OVERTPhi]      0.0725      0.042      1.719      0.086      -0.010       0.155
+C(strategy, Treatment('baseline'))[T.SMOTEB]        0.1725      0.054      3.207      0.001       0.067       0.278
+C(strategy, Treatment('baseline'))[T.SMOTET]        0.2204      0.055      4.043      0.000       0.114       0.327
+C(strategy, Treatment('baseline'))[T.SMOTETPhi]     0.2036      0.079      2.590      0.010       0.050       0.358
+C(strategy, Treatment('baseline'))[T.UNDERB]        0.0469      0.044      1.061      0.289      -0.040       0.134
+C(strategy, Treatment('baseline'))[T.UNDERT]        0.0526      0.047      1.127      0.260      -0.039       0.144
+C(strategy, Treatment('baseline'))[T.UNDERTPhi]     0.0407      0.065      0.625      0.532      -0.087       0.168
+C(dataset_id)[T.DS02]                               1.3655   1.85e-14   7.36e+13      0.000       1.365       1.365
+C(dataset_id)[T.DS03]                               0.3506   1.85e-14    1.9e+13      0.000       0.351       0.351
+C(dataset_id)[T.DS04]                              20.3624   2.86e-14   7.13e+14      0.000      20.362      20.362
+C(dataset_id)[T.DS05]                               1.4620   1.92e-14   7.61e+13      0.000       1.462       1.462
+C(dataset_id)[T.DS06]                               3.5169   1.83e-14   1.92e+14      0.000       3.517       3.517
+C(dataset_id)[T.DS07]                               4.1472   2.19e-14   1.89e+14      0.000       4.147       4.147
+C(dataset_id)[T.DS08]                              18.1728   2.69e-14   6.76e+14      0.000      18.173      18.173
+C(dataset_id)[T.DS09]                               9.5117   2.61e-14   3.65e+14      0.000       9.512       9.512
+C(dataset_id)[T.DS10]                               7.3608    2.5e-14   2.94e+14      0.000       7.361       7.361
+C(dataset_id)[T.DS11]                               8.6020   1.87e-14   4.59e+14      0.000       8.602       8.602
+C(dataset_id)[T.DS12]                               9.6730   3.24e-14   2.98e+14      0.000       9.673       9.673
+C(dataset_id)[T.DS13]                              11.6206   2.51e-14   4.63e+14      0.000      11.621      11.621
+C(dataset_id)[T.DS14]                              -2.7249      2e-14  -1.37e+14      0.000      -2.725      -2.725
+C(dataset_id)[T.DS15]                              -2.9559   2.64e-14  -1.12e+14      0.000      -2.956      -2.956
+C(dataset_id)[T.DS16]                              -2.7391   1.83e-14   -1.5e+14      0.000      -2.739      -2.739
+C(dataset_id)[T.DS17]                              -2.5934   1.84e-14  -1.41e+14      0.000      -2.593      -2.593
+C(dataset_id)[T.DS18]                              -2.7214   2.41e-14  -1.13e+14      0.000      -2.721      -2.721
+C(dataset_id)[T.DS19]                              -2.7498   1.88e-14  -1.47e+14      0.000      -2.750      -2.750
+C(dataset_id)[T.DS20]                              -3.8413    1.9e-14  -2.03e+14      0.000      -3.841      -3.841
+C(model_family)[T.mars]                             0.3621      0.173      2.087      0.037       0.022       0.702
+C(model_family)[T.rf]                              -0.0270      0.067     -0.403      0.687      -0.158       0.104
+C(model_family)[T.rpart]                            0.2847      0.075      3.796      0.000       0.138       0.432
+C(model_family)[T.svm]                              0.0451      0.032      1.418      0.156      -0.017       0.108
+==============================================================================
+Omnibus:                     1136.894   Durbin-Watson:                   0.521
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):           147754.040
+Skew:                           5.403   Prob(JB):                         0.00
+Kurtosis:                      61.560   Cond. No.                         23.4
+==============================================================================
+
+Notes:
+[1] Standard Errors are robust to cluster correlation (cluster)
+
+=== SERA (log): strategy x family interaction, joint F-test ===
+F = 295850793453.534, p = 3.11e-105 (36 interaction terms)
+A significant p means the strategy effect genuinely differs by model
+family (matches the per-family split already visible across the 15
+Bayes charts / 15 CD diagrams) -- the pooled coefficients above then
+describe an average effect that no single family actually experiences.

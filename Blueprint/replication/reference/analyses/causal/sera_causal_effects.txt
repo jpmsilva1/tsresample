@@ -1,0 +1,101 @@
+NOTE ON SIGN: tau = mean(log(SERA_strategy) - log(SERA_baseline)). SERA is
+lower-is-better, so a POSITIVE tau means the strategy is WORSE than baseline
+(matches generate_regression.py's coefficient sign -- e.g. SMOTEB here should
+equal that script's SMOTEB coefficient exactly). This is the OPPOSITE sign
+convention from the Bayes charts' ROPE, which is defined as
+log(baseline) - log(strategy) (positive = strategy better) -- don't compare
+signs across the two without checking which convention each uses.
+
+=== SERA (log): pooled causal effect (tau_k vs. baseline) ===
+Randomization inference, permutation within (dataset, model_family) blocks,
+N_perm=10000. Holm-adjusted p controls the family-wise error across
+these 9 strategies (confirmatory). Point estimate = mean paired difference
+across all 100 blocks; identical to the two-way FE OLS coefficient under
+this design's full balance.
+
+              tau  p_value  p_holm
+OVERB      0.0698   0.0182  0.0910
+OVERT      0.0645   0.0277  0.1108
+OVERTPhi   0.0725   0.0111  0.0666
+SMOTEB     0.1725   0.0001  0.0009
+SMOTET     0.2204   0.0001  0.0009
+SMOTETPhi  0.2036   0.0001  0.0009
+UNDERB     0.0469   0.1147  0.2337
+UNDERT     0.0526   0.0779  0.2337
+UNDERTPhi  0.0407   0.1721  0.2337
+
+=== Leave-one-source-out jackknife (pooled tau_k) ===
+The 20 datasets are 5 sources (see plan): dropping an entire source and
+recomputing tau_k shows how much of the pooled effect any single source
+(esp. the 7-dataset Istanbul Stock Exchange block) is carrying.
+
+strategy          OVERB   OVERT  OVERTPhi  SMOTEB  SMOTET  SMOTETPhi  UNDERB  UNDERT  UNDERTPhi
+bike_daily       0.0863  0.0767    0.0855  0.1901  0.2421     0.2119  0.0419  0.0512     0.0281
+bike_hourly      0.0875  0.0809    0.0908  0.2186  0.2682     0.2494  0.0669  0.0727     0.0635
+icelandic_river  0.0319  0.0412    0.0431  0.1585  0.2117     0.1917  0.0509  0.0573     0.0430
+istanbul_stock   0.0175  0.0062    0.0177  0.0431  0.0764     0.0409 -0.0407 -0.0421    -0.0671
+porto_weather    0.1229  0.1109    0.1205  0.2305  0.2780     0.2957  0.0984  0.1051     0.1152
+
+=== Sensitivity: pooled tau_k excluding the SVM family ===
+cap_svm_train() bundles a training-window truncation into the SVM
+OVER/SMOTE arms (see plan). If dropping svm barely moves tau_k, that
+co-treatment isn't driving the pooled conclusion.
+
+              tau  p_value  p_holm
+OVERB      0.0730   0.0381  0.2286
+OVERT      0.0600   0.0830  0.3320
+OVERTPhi   0.0698   0.0507  0.2535
+SMOTEB     0.1755   0.0001  0.0009
+SMOTET     0.2172   0.0001  0.0009
+SMOTETPhi  0.1978   0.0001  0.0009
+UNDERB     0.0525   0.1424  0.3420
+UNDERT     0.0559   0.1140  0.3420
+UNDERTPhi  0.0421   0.2415  0.3420
+
+=== Per-family effects (exploratory, NOT multiplicity-adjusted) ===
+     strategy     tau  p_value model_family
+0       OVERB -0.0427   0.2744           lm
+1       OVERT -0.0229   0.5509           lm
+2    OVERTPhi -0.0216   0.5753           lm
+3      SMOTEB  0.0518   0.1817           lm
+4      SMOTET  0.1482   0.0004           lm
+5   SMOTETPhi  0.1295   0.0005           lm
+6      UNDERB  0.0088   0.8147           lm
+7      UNDERT  0.0266   0.4852           lm
+8   UNDERTPhi  0.0016   0.9689           lm
+9       OVERB  0.0571   0.2484          svm
+10      OVERT  0.0825   0.0901          svm
+11   OVERTPhi  0.0833   0.0878          svm
+12     SMOTEB  0.1606   0.0009          svm
+13     SMOTET  0.2328   0.0001          svm
+14  SMOTETPhi  0.2266   0.0001          svm
+15     UNDERB  0.0246   0.6156          svm
+16     UNDERT  0.0393   0.4264          svm
+17  UNDERTPhi  0.0350   0.4806          svm
+18      OVERB  0.2673   0.0145         mars
+19      OVERT  0.2013   0.0805         mars
+20   OVERTPhi  0.2415   0.0301         mars
+21     SMOTEB  0.3607   0.0002         mars
+22     SMOTET  0.3661   0.0005         mars
+23  SMOTETPhi  0.3662   0.0006         mars
+24     UNDERB  0.0239   0.8471         mars
+25     UNDERT  0.0280   0.8168         mars
+26  UNDERTPhi  0.0213   0.8575         mars
+27      OVERB -0.0010   0.9827           rf
+28      OVERT  0.0008   0.9866           rf
+29   OVERTPhi  0.0009   0.9846           rf
+30     SMOTEB  0.0454   0.3759           rf
+31     SMOTET  0.0851   0.0570           rf
+32  SMOTETPhi  0.0328   0.5228           rf
+33     UNDERB -0.0352   0.4913           rf
+34     UNDERT -0.0347   0.5061           rf
+35  UNDERTPhi -0.0483   0.3476           rf
+36      OVERB  0.0682   0.2240        rpart
+37      OVERT  0.0608   0.2795        rpart
+38   OVERTPhi  0.0584   0.3041        rpart
+39     SMOTEB  0.2441   0.0001        rpart
+40     SMOTET  0.2696   0.0001        rpart
+41  SMOTETPhi  0.2627   0.0001        rpart
+42     UNDERB  0.2124   0.0001        rpart
+43     UNDERT  0.2037   0.0001        rpart
+44  UNDERTPhi  0.1937   0.0004        rpart

@@ -1,0 +1,24 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{Causal Effect on $\log(\mathrm{SERA})$ vs.\ Baseline} (pooled, $N{=}100$ blocks). Positive $\tau_k$ = strategy WORSE than baseline (SERA is lower-is-better). Bold indicates Holm-significant at $\alpha{=}0.05$.}
+\label{tab:causal_sera_pooled}
+\vspace{4pt}
+\noindent
+\makebox[\textwidth][c]{%
+\begin{tabular}{lccc c}
+\toprule
+\textbf{Strategy} & \textbf{$\tau_k$} & \textbf{95\% CI} & \textbf{RI $p$} & \textbf{Holm $p$} \\
+\midrule
+\texttt{UNDERB} & 0.0469 & [-0.0023, 0.0932] & 0.115 & 0.234 \\
+\texttt{UNDERT} & 0.0526 & [0.0029, 0.0997] & 0.078 & 0.234 \\
+\texttt{UNDERTPhi} & 0.0407 & [-0.0219, 0.0995] & 0.172 & 0.234 \\
+\texttt{OVERB} & 0.0698 & [0.0103, 0.1540] & 0.018 & 0.091 \\
+\texttt{OVERT} & 0.0645 & [0.0205, 0.1194] & 0.028 & 0.111 \\
+\texttt{OVERTPhi} & 0.0725 & [0.0217, 0.1390] & 0.011 & 0.067 \\
+\texttt{SMOTEB} & \textbf{0.1725} & [0.1161, 0.2336] & $<0.001$ & $<0.001$ \\
+\texttt{SMOTET} & \textbf{0.2204} & [0.1687, 0.2773] & $<0.001$ & $<0.001$ \\
+\texttt{SMOTETPhi} & \textbf{0.2036} & [0.1303, 0.2754] & $<0.001$ & $<0.001$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}

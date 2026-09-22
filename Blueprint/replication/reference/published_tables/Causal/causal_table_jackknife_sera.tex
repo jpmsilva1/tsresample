@@ -1,0 +1,26 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{Leave-One-Source-Out Jackknife, $\log(\mathrm{SERA})$}: pooled $\tau_k$ recomputed excluding each of the 5 dataset sources in turn. Note the sign change for UNDER strategies when excluding Istanbul Stock Exchange.}
+\label{tab:causal_jackknife_sera}
+\vspace{4pt}
+\noindent
+\makebox[\textwidth][c]{%
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Strategy} & \textbf{Pooled} & \textbf{Excl.\ Bike Daily} & \textbf{Excl.\ Bike Hourly} & \textbf{Excl.\ Icelandic River} & \textbf{Excl.\ Istanbul Stock} & \textbf{Excl.\ Porto Weather} \\
+\midrule
+\texttt{UNDERB} & 0.0469 & 0.0419 & 0.0669 & 0.0509 & -0.0407 & 0.0984 \\
+\texttt{UNDERT} & 0.0526 & 0.0512 & 0.0727 & 0.0573 & -0.0421 & 0.1051 \\
+\texttt{UNDERTPhi} & 0.0407 & 0.0281 & 0.0635 & 0.0430 & -0.0671 & 0.1152 \\
+\texttt{OVERB} & 0.0698 & 0.0863 & 0.0875 & 0.0319 & 0.0175 & 0.1229 \\
+\texttt{OVERT} & 0.0645 & 0.0767 & 0.0809 & 0.0412 & 0.0062 & 0.1109 \\
+\texttt{OVERTPhi} & 0.0725 & 0.0855 & 0.0908 & 0.0431 & 0.0177 & 0.1205 \\
+\texttt{SMOTEB} & 0.1725 & 0.1901 & 0.2186 & 0.1585 & 0.0431 & 0.2305 \\
+\texttt{SMOTET} & 0.2204 & 0.2421 & 0.2682 & 0.2117 & 0.0764 & 0.2780 \\
+\texttt{SMOTETPhi} & 0.2036 & 0.2119 & 0.2494 & 0.1917 & 0.0409 & 0.2957 \\
+\bottomrule
+\end{tabular}%
+}%
+}
+\end{table*}

@@ -1,0 +1,37 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{Best and Worst (Model, Strategy) Combination per Dataset -- SERA}, across all 50 model-family$\times$strategy combinations.}
+\label{tab:exp002_sera_best_worst}
+\vspace{4pt}
+\noindent
+\makebox[\textwidth][c]{%
+\resizebox{1.15\textwidth}{!}{%
+\begin{tabular}{lllll}
+\toprule
+\textbf{Dataset} & \textbf{Best Combo} & \textbf{Best SERA} & \textbf{Worst Combo} & \textbf{Worst SERA} \\
+\midrule
+DS01 (Bike Daily Temp) & \texttt{LM.baseline} & 0.2158 & \texttt{RPART.SMOTETPhi} & 0.4174 \\
+DS02 (Bike Daily Humidity) & \texttt{LM.OVERB} & 0.7579 & \texttt{RPART.UNDERTPhi} & 1.9606 \\
+DS03 (Bike Daily Windspeed) & \texttt{LM.OVERTPhi} & 0.2592 & \texttt{RPART.SMOTETPhi} & 0.7198 \\
+DS04 (Bike Daily Count) & \texttt{LM.OVERB} & $1.3462 \times 10^{8}$ & \texttt{MARS.SMOTETPhi} & $4.0543 \times 10^{8}$ \\
+DS05 (Bike Hourly Temp) & \texttt{RF.UNDERTPhi} & 0.9550 & \texttt{RPART.UNDERTPhi} & 1.5357 \\
+DS06 (Bike Hourly Humidity) & \texttt{RF.UNDERTPhi} & 7.3799 & \texttt{RPART.UNDERTPhi} & 13.0880 \\
+DS07 (Bike Hourly Windspeed) & \texttt{LM.SMOTEB} & 15.1956 & \texttt{RPART.UNDERTPhi} & 21.9584 \\
+DS08 (Bike Hourly Count) & \texttt{RF.SMOTEB} & $1.3018 \times 10^{7}$ & \texttt{LM.baseline} & $4.1170 \times 10^{7}$ \\
+DS09 (Icelandic River Flow) & \texttt{RPART.UNDERTPhi} & 1237.0743 & \texttt{MARS.OVERB} & $7.1304 \times 10^{5}$ \\
+DS10 (Porto Min Temp) & \texttt{RF.UNDERTPhi} & 188.9117 & \texttt{RPART.baseline} & 836.6724 \\
+DS11 (Porto Max Temp) & \texttt{SVM.OVERB} & 1144.2384 & \texttt{RPART.SMOTETPhi} & 2371.3727 \\
+DS12 (Porto Max Steady Wind) & \texttt{LM.OVERT} & 2891.2632 & \texttt{RPART.SMOTETPhi} & 8291.8559 \\
+DS13 (Porto Max Wind Gust) & \texttt{LM.OVERB} & 21214.7891 & \texttt{RPART.SMOTEB} & 43352.6565 \\
+DS14 (Istanbul S\&P) & \texttt{RF.OVERT} & 0.0135 & \texttt{MARS.SMOTETPhi} & 0.0247 \\
+DS15 (Istanbul DAX) & \texttt{LM.baseline} & 0.0099 & \texttt{MARS.SMOTET} & 0.0268 \\
+DS16 (Istanbul FTSE) & \texttt{SVM.baseline} & 0.0119 & \texttt{MARS.SMOTET} & 0.0274 \\
+DS17 (Istanbul Nikkei) & \texttt{RF.OVERB} & 0.0143 & \texttt{MARS.SMOTET} & 0.0310 \\
+DS18 (Istanbul Bovespa) & \texttt{SVM.baseline} & 0.0127 & \texttt{RPART.SMOTETPhi} & 0.0288 \\
+DS19 (Istanbul EU) & \texttt{LM.baseline} & 0.0121 & \texttt{MARS.SMOTETPhi} & 0.0578 \\
+DS20 (Istanbul EM) & \texttt{LM.baseline} & 0.0039 & \texttt{MARS.SMOTET} & 0.0115 \\
+\bottomrule
+\end{tabular}%
+}%
+}
+\end{table*}

@@ -1,0 +1,44 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{Global Average Rank -- F1 and SERA Side by Side}, ranking all 50 model-family$\times$strategy combinations jointly across the 20 datasets per metric (rank 1 = best; NOT a per-family ranking).}
+\label{tab:exp002_f1_sera_avg_ranks}
+\vspace{4pt}
+\noindent
+\makebox[\textwidth][c]{%
+\resizebox{1.15\textwidth}{!}{%
+\begin{tabular}{lclclclc}
+\toprule
+\multicolumn{4}{c}{\textbf{F1}} & \multicolumn{4}{c}{\textbf{SERA}} \\
+\cmidrule(lr){1-4}\cmidrule(lr){5-8}
+\textbf{Combo} & \textbf{Avg. Rank} & \textbf{Combo} & \textbf{Avg. Rank} & \textbf{Combo} & \textbf{Avg. Rank} & \textbf{Combo} & \textbf{Avg. Rank} \\
+\midrule
+\textbf{\texttt{SVM.UNDERTPhi}} & \textbf{14.4} & \texttt{MARS.SMOTET} & 24.2 & \textbf{\texttt{LM.OVERB}} & \textbf{12.5} & \texttt{RF.SMOTET} & 23.6 \\
+\texttt{SVM.SMOTEB} & 15.2 & \texttt{MARS.OVERT} & 24.2 & \texttt{LM.OVERT} & 14.2 & \texttt{MARS.UNDERTPhi} & 24.1 \\
+\texttt{SVM.UNDERT} & 16.3 & \texttt{MARS.OVERTPhi} & 24.3 & \texttt{RF.UNDERTPhi} & 14.4 & \texttt{MARS.UNDERB} & 24.9 \\
+\texttt{LM.SMOTEB} & 16.8 & \texttt{RPART.SMOTEB} & 25.1 & \texttt{LM.OVERTPhi} & 14.6 & \texttt{MARS.UNDERT} & 26.1 \\
+\texttt{SVM.UNDERB} & 17.1 & \texttt{RPART.OVERT} & 25.1 & \texttt{RF.UNDERB} & 14.9 & \texttt{LM.SMOTETPhi} & 27.3 \\
+\texttt{LM.SMOTET} & 18.1 & \texttt{RPART.OVERTPhi} & 25.4 & \texttt{LM.baseline} & 15.6 & \texttt{LM.SMOTET} & 27.8 \\
+\texttt{SVM.OVERT} & 18.1 & \texttt{RPART.OVERB} & 25.8 & \texttt{SVM.baseline} & 15.7 & \texttt{RPART.baseline} & 28.1 \\
+\texttt{SVM.OVERB} & 18.3 & \texttt{RPART.UNDERB} & 25.9 & \texttt{RF.UNDERT} & 15.8 & \texttt{SVM.SMOTEB} & 28.8 \\
+\texttt{RF.SMOTEB} & 18.4 & \texttt{RPART.UNDERT} & 26.6 & \texttt{LM.UNDERB} & 16.3 & \texttt{MARS.OVERB} & 30.0 \\
+\texttt{SVM.SMOTET} & 18.5 & \texttt{RPART.SMOTETPhi} & 26.7 & \texttt{RF.baseline} & 16.7 & \texttt{MARS.OVERT} & 30.9 \\
+\texttt{SVM.OVERTPhi} & 19.0 & \texttt{RF.UNDERTPhi} & 27.4 & \texttt{RF.OVERB} & 17.0 & \texttt{MARS.OVERTPhi} & 31.9 \\
+\texttt{RF.SMOTETPhi} & 19.2 & \texttt{RPART.SMOTET} & 28.1 & \texttt{SVM.UNDERB} & 17.3 & \texttt{RPART.OVERTPhi} & 32.4 \\
+\texttt{SVM.SMOTETPhi} & 19.4 & \texttt{RF.UNDERT} & 28.8 & \texttt{LM.UNDERTPhi} & 17.4 & \texttt{SVM.SMOTET} & 32.5 \\
+\texttt{LM.SMOTETPhi} & 19.6 & \texttt{RF.UNDERB} & 29.1 & \texttt{RF.OVERTPhi} & 17.4 & \texttt{SVM.SMOTETPhi} & 32.7 \\
+\texttt{LM.UNDERTPhi} & 19.9 & \texttt{MARS.UNDERTPhi} & 30.9 & \texttt{RF.OVERT} & 17.5 & \texttt{RPART.OVERB} & 32.7 \\
+\texttt{LM.OVERTPhi} & 20.0 & \texttt{RPART.baseline} & 32.4 & \texttt{SVM.UNDERT} & 17.8 & \texttt{RPART.OVERT} & 32.8 \\
+\texttt{LM.UNDERT} & 20.1 & \texttt{MARS.UNDERT} & 33.1 & \texttt{LM.UNDERT} & 18.1 & \texttt{MARS.SMOTEB} & 38.0 \\
+\texttt{LM.OVERB} & 21.2 & \texttt{MARS.UNDERB} & 34.2 & \texttt{SVM.UNDERTPhi} & 18.6 & \texttt{RPART.UNDERTPhi} & 39.7 \\
+\texttt{LM.OVERT} & 21.6 & \texttt{RF.OVERB} & 38.1 & \texttt{RF.SMOTEB} & 20.1 & \texttt{RPART.UNDERT} & 39.8 \\
+\texttt{MARS.SMOTEB} & 21.6 & \texttt{RF.OVERTPhi} & 39.3 & \texttt{SVM.OVERB} & 20.2 & \texttt{RPART.UNDERB} & 40.0 \\
+\texttt{RF.SMOTET} & 21.9 & \texttt{RF.OVERT} & 39.9 & \texttt{LM.SMOTEB} & 21.1 & \texttt{RPART.SMOTEB} & 41.4 \\
+\texttt{LM.UNDERB} & 21.9 & \texttt{MARS.baseline} & 41.4 & \texttt{RF.SMOTETPhi} & 21.6 & \texttt{MARS.SMOTETPhi} & 41.4 \\
+\texttt{MARS.OVERB} & 22.6 & \texttt{SVM.baseline} & 43.9 & \texttt{MARS.baseline} & 22.1 & \texttt{MARS.SMOTET} & 41.9 \\
+\texttt{MARS.SMOTETPhi} & 23.3 & \texttt{RF.baseline} & 44.1 & \texttt{SVM.OVERTPhi} & 22.3 & \texttt{RPART.SMOTETPhi} & 42.5 \\
+\texttt{RPART.UNDERTPhi} & 24.1 & \texttt{LM.baseline} & 44.4 & \texttt{SVM.OVERT} & 22.4 & \texttt{RPART.SMOTET} & 42.5 \\
+\bottomrule
+\end{tabular}%
+}%
+}
+\end{table*}

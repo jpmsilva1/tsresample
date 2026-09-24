@@ -127,7 +127,7 @@ specification exactly (10,800/10,800). Per-dataset rankings agree with R (mean S
 ρ = 0.88).
 
 One diagnostic misses its bar. On DS19 the nine strategies are statistically tied, and the
-ranking correlation there is 0.47 against a per-dataset floor of 0.6. Full numbers are in
+ranking correlation there is about 0.5 against a per-dataset floor of 0.6. Full numbers are in
 [`replication_report.md`](replication_report.md).
 
 Where the library knowingly differs from the paper's pseudocode, it is because it follows

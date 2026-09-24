@@ -33,7 +33,7 @@ Rows in the same wave can run in parallel sessions.
 | 3 | Bumps (`_bins.py`) | 3 | 2a | Done (2026-09-24, @jpmsilva1) | local branch `node/3-bumps`; G1 partition property + G3 worked examples (both rules, two- and one-sided, no-bump); 144 tests, 100 % cov; inline self-review |
 | 4 | Preferences (`_prefs.py`) | 4 | 3 | Done (2026-09-24, @jpmsilva1) | local branch `node/4-prefs`; G3 worked examples for all three biases, zero-sum and too-few-positive fallbacks; new seam `_prefs.draw` recorded in QUALITY_GATES §2; 150 tests, 100 % cov; inline self-review |
 | 5 | Sampling (`_sample.py`) | 5 | 4 | Done (2026-09-24, @jpmsilva1) | local branch `node/5-sampling`; G3 worked examples for all three strategies (balance + explicit o/u, R float-truncation and half-even cases) and G1 size properties; ADR-0015 (singleton-bump size property); new seam `_sample.resample`; 164 tests, 100 % cov; inline self-review |
-| 6 | Synthesis (`_synth.py`) | 6 | 5 | Not started | |
+| 6 | Synthesis (`_synth.py`) | 6 | 5 | Done (2026-09-24, @jpmsilva1) | local branch `node/6-synthesis`; G3 hand-worked neighbour choice for T and TPhi under both r_quirks, B with k=1, k_eff path, tie midpoint, extra seeds, determinism; mutations (quirk off, nearness tau, per-attribute lambda, no midpoint) all caught; ADR-0013 amendment (column a = X[:,0]); 172 tests, 100 % cov; inline self-review |
 | 7 | Resampler (`resampler.py`, gate G2) | 7 | 6 | Not started | |
 | 8 | Metrics (`metrics.py`, `_utility.py`, gate G0b) | 8 | M0, 7 | Not started | |
 | 9a | Pipeline I/O | 8 | 7 | Not started | |

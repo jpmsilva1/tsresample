@@ -35,3 +35,13 @@ nearness rank, which carries no recency at all.
 
 - G3 carries hand-worked examples for both `r_quirks` settings. G4 runs with the default.
 - Docs list both quirks explicitly under "Deviations from the paper's pseudocode".
+
+## Amendment — step 6 (2026-09-24): which column is "the last predictor"
+
+In R's `create.data` layout (`V1…V_m`, oldest lag first, target last) the "last
+predictor" is the **most recent lag**. The library's `embed` puts the most recent lag
+**first** (`X[:, 0] = y_t`, ADR-0005). The weights therefore use `X[:, 0]`, which is the
+same variable as R's column. With user-built `X` (not from `embed`), column 0 is taken
+as the most recent lag, and the docstring says so. The column only matters when the
+seed and neighbour tie on it (the midpoint rule); otherwise the target reduces to the
+shared λ.

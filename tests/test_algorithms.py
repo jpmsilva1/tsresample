@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from tsresample import _bins, _prefs, _relevance, _sample
+from tsresample import _bins, _prefs, _relevance, _sample, _synth
 
 
 def test_control_points_use_tukey_hinges_and_whisker_ends() -> None:
@@ -266,3 +266,156 @@ def test_smote_bump_size_rounds_half_to_even() -> None:
 def test_negative_o_or_u_is_rejected() -> None:
     with pytest.raises(ValueError, match="expected u >= 0"):
         _sample.targets(BUMPS_20, 20, "under", None, -0.1)
+
+
+# --- synthesis (SPEC §4.5, ADR-0013) ---------------------------------------------
+# One rare bump of 3 cases (input rows 0..2), times 0, 1, 2:
+#   row 0: X = [0, 0],  y = 5, phi 0.2
+#   row 1: X = [10, 5], y = 1, phi 1.0
+#   row 2: X = [1, 3],  y = 3, phi 0.5
+# T_y (value order) = rows [1, 2, 0]; T_t (time order) = rows [0, 1, 2].
+# Distances: 0-1 sqrt(125) = 11.18, 0-2 sqrt(10) = 3.16, 1-2 sqrt(85) = 9.22.
+# k_eff = 2 for k = 2 (k < |B|) and for k >= 3 (|B| - 1). On T_t, nearest first:
+#   pos0 -> [2, 1];  pos1 -> [2, 0];  pos2 -> [0, 1]
+SX = np.array([[0.0, 0.0], [10.0, 5.0], [1.0, 3.0]])
+SY = np.array([5.0, 1.0, 3.0])
+SPHI = np.array([0.2, 1.0, 0.5])
+SBUMP = _bins.Bump(np.array([1, 2, 0]), rare=True, normal=False)
+
+
+def _pairs(
+    X_new: np.ndarray, y_new: np.ndarray, seeds: np.ndarray
+) -> list[tuple[int, int]]:
+    """Recover (seed row, neighbour row) from each synthetic case's geometry and
+    check the shared-lambda interpolation of X and (away from ties) of y."""
+    out = []
+    for x, yv, s in zip(X_new, y_new, seeds, strict=True):
+        for nn in range(3):
+            d = SX[nn] - SX[s]
+            if nn == s or not d.any():
+                continue
+            lam = (x - SX[s])[0] / d[0]
+            if 0 <= lam <= 1 and np.allclose(SX[s] + lam * d, x):
+                assert yv == pytest.approx(SY[s] + lam * (SY[nn] - SY[s]))
+                out.append((int(s), nn))
+    return out
+
+
+@pytest.mark.parametrize(
+    ("r_quirks", "expected"),
+    [
+        # T: most recent candidate = max T_t position: pos0 -> 2, pos1 -> 2, pos2 -> 1.
+        # quirk: seed T_y[s], neighbour T_y[m], T_y = rows [1, 2, 0]:
+        #   s0: row 1 -> T_y[2] = row 0; s1: row 2 -> row 0; s2: row 0 -> T_y[1] = row 2
+        (True, [(1, 0), (2, 0), (0, 2)]),
+        # no quirk: T_t = rows [0, 1, 2]: 0 -> 2, 1 -> 2, 2 -> 1
+        (False, [(0, 2), (1, 2), (2, 1)]),
+    ],
+)
+def test_temporal_smote_takes_the_most_recent_neighbour(
+    r_quirks: bool, expected: list[tuple[int, int]]
+) -> None:
+    # c = 2: nexs = 1 per seed, extra = floor(3 * 0) = 0 -> 3 synthetic cases.
+    X_new, y_new, seeds = _synth.synthesize(
+        SX,
+        SY,
+        SBUMP,
+        2.0,
+        np.arange(3),
+        SPHI,
+        "temporal",
+        2,
+        np.random.RandomState(0),
+        r_quirks=r_quirks,
+    )
+    assert _pairs(X_new, y_new, seeds) == expected
+
+
+@pytest.mark.parametrize(
+    ("r_quirks", "expected"),
+    [
+        # tau = (pos + 1) / (max pos among the candidates + 1); phi of T_t[pos]:
+        #   pos0 [2, 1]: max 2 -> 1 * .5 = .5 vs 2/3 * 1.0 = .667 -> pos1
+        #   pos1 [2, 0]: max 2 -> 1 * .5 = .5 vs 1/3 * .2 = .067 -> pos2
+        #   pos2 [0, 1]: max 1 -> 1/2 * .2 = .1 vs 1 * 1.0 = 1   -> pos1
+        # quirk reads T_y = rows [1, 2, 0]: (1, T_y[1]=2), (2, T_y[2]=0), (0, T_y[1]=2)
+        (True, [(1, 2), (2, 0), (0, 2)]),
+        # no quirk reads T_t = rows [0, 1, 2]: (0, 1), (1, 2), (2, 1)
+        (False, [(0, 1), (1, 2), (2, 1)]),
+    ],
+)
+def test_temporal_phi_smote_maximises_recency_times_phi(
+    r_quirks: bool, expected: list[tuple[int, int]]
+) -> None:
+    # k = 5 > |B| - 1: the bump-smaller-than-k+1 path, k_eff = 2.
+    X_new, y_new, seeds = _synth.synthesize(
+        SX,
+        SY,
+        SBUMP,
+        2.0,
+        np.arange(3),
+        SPHI,
+        "temporal+phi",
+        5,
+        np.random.RandomState(0),
+        r_quirks=r_quirks,
+    )
+    assert _pairs(X_new, y_new, seeds) == expected
+
+
+@pytest.mark.parametrize("r_quirks", [True, False])
+def test_uniform_smote_with_one_neighbour_takes_the_nearest(r_quirks: bool) -> None:
+    # k = 1: nearest of row 0 is row 2 (3.16), of row 1 is row 2 (9.22), of row 2
+    # is row 0 (3.16). B has no index quirk: seeds in T_y order rows 1, 2, 0 when
+    # r_quirks, T_t order rows 0, 1, 2 otherwise.
+    X_new, y_new, seeds = _synth.synthesize(
+        SX,
+        SY,
+        SBUMP,
+        2.0,
+        np.arange(3),
+        SPHI,
+        None,
+        1,
+        np.random.RandomState(0),
+        r_quirks=r_quirks,
+    )
+    pairs = {0: (0, 2), 1: (1, 2), 2: (2, 0)}
+    order = [1, 2, 0] if r_quirks else [0, 1, 2]
+    assert _pairs(X_new, y_new, seeds) == [pairs[s] for s in order]
+
+
+def test_extra_seeds_are_distinct_and_runs_are_deterministic() -> None:
+    # c = 2.5: nexs = 1 per seed (3), extra = floor(3 * 0.5) = 1 -> 4 cases.
+    runs = [
+        _synth.synthesize(
+            SX,
+            SY,
+            SBUMP,
+            2.5,
+            np.arange(3),
+            SPHI,
+            None,
+            2,
+            np.random.RandomState(7),
+        )
+        for _ in range(2)
+    ]
+    assert len(runs[0][2]) == 4
+    for a, b in zip(runs[0], runs[1], strict=True):
+        np.testing.assert_array_equal(a, b)
+
+
+def test_tied_most_recent_lag_gives_the_midpoint_target_under_r_quirks() -> None:
+    # Rows 0 and 1 share column 0 (the most recent lag) = 2, so d1 = d2 = 0 and R
+    # takes the midpoint (4 + 8) / 2 = 6 whatever lambda is. Without the quirk the
+    # full-vector weights give y_seed + lambda * (y_nn - y_seed) instead.
+    X = np.array([[2.0, 0.0], [2.0, 10.0]])
+    y = np.array([4.0, 8.0])
+    bump = _bins.Bump(np.array([0, 1]), rare=True, normal=False)
+    args = (X, y, bump, 2.0, np.arange(2), np.ones(2), None, 1)
+    _, y_q, _ = _synth.synthesize(*args, np.random.RandomState(0), r_quirks=True)
+    np.testing.assert_array_equal(y_q, [6.0, 6.0])
+    X_p, y_p, s = _synth.synthesize(*args, np.random.RandomState(0), r_quirks=False)
+    assert s[0] == 0  # time order: row 0 seeds first; x_new[1] = 0 + lambda * 10
+    np.testing.assert_allclose(y_p[0], 4.0 + X_p[0, 1] / 10.0 * 4.0)

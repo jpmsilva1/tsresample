@@ -52,7 +52,7 @@ count as verified.
 | 2 | `PchipInterpolator` | `CubicHermiteSpline`, `dydx = 0` at every knot | [0002](adr/0002-hermite-not-pchip.md) |
 | 3 | `IRonPy` is the φ oracle | unusable; the oracle is our own recorded R output | [0003](adr/0003-phi-oracle-replacement.md) |
 | 4 | `ng` read literally from Alg. 4 | target-size semantics pinned (refined by #16) | [0004](adr/0004-target-size-semantics.md) |
-| 5 | `embed(series, k)` unqualified | `create.data(ts, k_R)` ≡ `embed(series, k=k_R−1, horizon=1)` | [0005](adr/0005-embed-convention.md) |
+| 5 | `embed(series, k)` unqualified | `create.data(ts, k_R)` ≡ `embed(series, k=k_R−2, horizon=1)` (corrected from `k_R−1` in step 2b) | [0005](adr/0005-embed-convention.md) |
 | 6 | replacement unstated | under without, over and smote with (smote refined by #18) | [0006](adr/0006-sampling-replacement.md) |
 | 7–8 | rounding and τ unstated | superseded by #17 and #19 | [0007](adr/0007-rounding-and-tau.md) |
 | 9 | φ fit scope unstated | φ is fit only on the `y` passed in | [0008](adr/0008-phi-fit-scope.md) |
@@ -159,7 +159,8 @@ def embed(
     Mapping to the reference implementation: the paper's R helper
     ``create.data(ts, m)`` builds ``embed(ts, m)[, m:1]`` and treats the last
     column as the target, giving ``m - 1`` predictors and target ``y_t``.
-    The equivalent call here is ``embed(series, k=m - 1, horizon=1)``.
+    The equivalent call here is ``embed(series, k=m - 2, horizon=1)``: ``k + 1``
+    predictors, so ``k = m - 2``. ``create.data(ts, 10)`` is ``k=8``.
     See Blueprint/docs/adr/0005-embed-convention.md.
     """
 ```

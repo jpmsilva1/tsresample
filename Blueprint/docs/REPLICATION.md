@@ -182,7 +182,7 @@ Opt-in (`pytest -m replication`), nightly and on release tags. Needs
 ### 4.1 Procedure, per dataset
 
 1. Load `DS<nn>_*.csv`; take the `target` column in time order.
-2. Embed with `embed(series, k=9, horizon=1)` — the paper's `create.data(ts, 10)`
+2. Embed with `embed(series, k=8, horizon=1)` — the paper's `create.data(ts, 10)`
    (ADR-0005). Assert the row count matches the recorded experiment's `N`.
 3. For each of 50 Monte Carlo temporal splits (`train_size=0.5, test_size=0.25`;
    DS21–22 `0.1/0.05`, DS23–24 `0.2/0.1`; contiguous, train before test), for each of the

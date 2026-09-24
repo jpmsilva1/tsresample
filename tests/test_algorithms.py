@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from tsresample import _relevance
+from tsresample import _bins, _relevance
 
 
 def test_control_points_use_tukey_hinges_and_whisker_ends() -> None:
@@ -51,3 +51,61 @@ def test_control_points_drop_nans_and_reject_all_nan_input() -> None:
     )
     with pytest.raises(ValueError, match="no non-NaN values"):
         _relevance.control_points([np.nan, np.nan])
+
+
+# --- bumps (SPEC §4.2, ADR-0012) -------------------------------------------------
+# Two-sided example, t_R = 0.9. Case i (time index) has value y[i] and phi[i]:
+#   time: 0    1    2    3    4    5    6
+#   y:    5    1    3    9    7    2    8
+#   phi:  0.0  1.0  0.2  1.0  0.5  0.9  0.9
+# Value order (y ascending) -> time indices 1, 5, 2, 0, 4, 6, 3 with
+#   phi 1.0, 0.9, 0.2, 0.0, 0.5, 0.9, 1.0
+TWO_SIDED_Y = np.array([5.0, 1, 3, 9, 7, 2, 8])
+TWO_SIDED_PHI = np.array([0.0, 1.0, 0.2, 1.0, 0.5, 0.9, 0.9])
+
+
+def _as_lists(bs: list[_bins.Bump]) -> list[tuple[list[int], bool]]:
+    return [(b.idx.tolist(), b.rare) for b in bs]
+
+
+def test_under_smote_cut_on_strict_sign_change() -> None:
+    # s = -phi where phi > 0.9 else phi: -1, .9, .2, 0, .5, .9, -1.
+    # s_i * s_{i+1} < 0 only at the two ends -> bumps {1}, {5,2,0,4,6}, {3}.
+    # Means: 1.0 (> 0.9 rare), (0.9+0.2+0+0.5+0.9)/5 = 0.5 (normal), 1.0 (rare).
+    for rule in ("under", "smote"):
+        got = _bins.bumps(TWO_SIDED_Y, TWO_SIDED_PHI, 0.9, rule)
+        assert _as_lists(got) == [([1], True), ([5, 2, 0, 4, 6], False), ([3], True)]
+
+
+def test_over_cuts_where_phi_crosses_t_r_inclusively() -> None:
+    # phi >= 0.9: T, T, F, F, F, T, T -> bumps {1,5}, {2,0,4}, {6,3}.
+    # Means: 0.95 (>= 0.9 rare), 0.7/3 = 0.233 (normal), 0.95 (rare).
+    got = _bins.bumps(TWO_SIDED_Y, TWO_SIDED_PHI, 0.9, "over")
+    assert _as_lists(got) == [([1, 5], True), ([2, 0, 4], False), ([6, 3], True)]
+
+
+@pytest.mark.parametrize("rule", ["under", "over", "smote"])
+def test_one_sided_phi_gives_a_normal_and_a_high_rare_bump(rule: str) -> None:
+    # time: 0 1 2 3; y = 3, 1, 2, 4; phi = 0.5, 0, 0, 1 (phi = 0 low endpoint).
+    # Value order: times 1, 2, 0, 3 with phi 0, 0, 0.5, 1. Both rules cut only
+    # before phi = 1 -> {1, 2, 0} mean 0.5/3 = 0.167 (normal), {3} mean 1 (rare).
+    got = _bins.bumps([3.0, 1, 2, 4], [0.5, 0, 0, 1], 0.9, rule)  # type: ignore[arg-type]
+    assert _as_lists(got) == [([1, 2, 0], False), ([3], True)]
+    assert [b.normal for b in got] == [True, False]
+
+
+@pytest.mark.parametrize(
+    ("phi", "rule"),
+    [
+        ([0.0, 0.0, 0.0], "under"),  # every phi 0: one normal bump, no rare
+        ([1.0, 1.0, 1.0], "over"),  # every phi 1: one rare bump, no normal
+        # Sign rule: s = -1, 0, 0 -> product never < 0, so one bump of mean 1/3:
+        # a rare case swallowed into a normal bump (R's quirk) -> no rare bump.
+        ([1.0, 0.0, 0.0], "smote"),
+    ],
+)
+def test_no_rare_or_no_normal_bump_returns_empty_with_warning(
+    phi: list[float], rule: str
+) -> None:
+    with pytest.warns(UserWarning, match="no rare bump|no normal bump"):
+        assert _bins.bumps([1.0, 2, 3], phi, 0.9, rule) == []  # type: ignore[arg-type]

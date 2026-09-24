@@ -74,6 +74,11 @@ fail_under = 90
 strict = true
 files = ["src"]
 
+[[tool.mypy.overrides]]
+# Neither ships type information; adding stub packages is not worth a dev dep.
+module = ["scipy.*", "sklearn.*"]
+ignore_missing_imports = true
+
 [tool.ruff]
 line-length = 88
 target-version = "py310"

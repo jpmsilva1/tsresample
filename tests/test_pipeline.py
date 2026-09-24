@@ -7,7 +7,12 @@ import numpy as np
 import pytest
 
 from tsresample import _relevance, embed
-from tsresample.pipeline import load_series, temporal_split
+from tsresample.pipeline import (
+    evaluate,
+    imbalance_summary,
+    load_series,
+    temporal_split,
+)
 
 DATA = Path(__file__).resolve().parents[1] / "Blueprint" / "replication" / "datasets"
 
@@ -137,3 +142,95 @@ def test_knn_needs_one_gap_free_window(tmp_path: Path) -> None:
     rows = [(f"2020-01-{i + 1:02d}", "" if i % 5 == 0 else "1") for i in range(20)]
     with pytest.raises(ValueError, match="gap-free window"):
         load_series(_csv(tmp_path, rows), target="value")
+
+
+def test_imbalance_summary_counts_rare_cases_inclusively() -> None:
+    # y = 1..9, 100: phi = 1 only at 9 and 100 (control points (1,0),(5.5,0),(9,1),
+    # worked in test_algorithms) -> n_rare 2, n_normal 8, IR 2/8, %Rare 20.
+    y = np.array([4, 1, 9, 2, 100, 3, 8, 5, 7, 6], dtype=float)
+    assert imbalance_summary(y) == {
+        "N": 10,
+        "n_normal": 8,
+        "n_rare": 2,
+        "IR": 0.25,
+        "pct_rare": 20.0,
+    }
+
+
+def test_imbalance_summary_refuses_a_single_value() -> None:
+    with pytest.raises(ValueError, match="at least 2"):
+        imbalance_summary([3.0])
+
+
+def test_imbalance_summary_matches_paper_table_1() -> None:
+    # %Rare on the embedded target of the 18 NA-free datasets vs the paper's
+    # Table 1 (phi_oracle.json): MAE 0.169 pp, same as gate G0 Test B (SPEC §4.1).
+    import json
+
+    oracle = json.loads(
+        (DATA.parent.parent / "tests" / "fixtures" / "phi_oracle.json").read_text()
+    )["datasets"]
+    err = []
+    for ds, d in oracle.items():
+        if not d.get("r_splits"):
+            continue
+        s = load_series(next(DATA.glob(f"{ds}_*.csv")), target="target", impute=None)
+        _, y = embed(s, k=8)
+        err.append(abs(imbalance_summary(y)["pct_rare"] - d["paper_pct_rare"]))
+    assert len(err) == 18 and sum(err) / 18 <= 0.25
+
+
+def _ds01_embedded() -> tuple[np.ndarray, np.ndarray]:
+    s = load_series(next(DATA.glob("DS01_*.csv")), target="target", impute=None)
+    return embed(s[:300], k=8)
+
+
+def test_evaluate_returns_one_row_per_strategy_split_metric() -> None:
+    from sklearn.linear_model import LinearRegression
+
+    X, y = _ds01_embedded()
+    splitter = lambda X, y: temporal_split(X, y, n_reps=3, random_state=0)  # noqa: E731
+    df = evaluate(LinearRegression(), X, y, splitter=splitter)
+    assert list(df.columns) == ["strategy", "split", "metric", "value"]
+    # baseline + the 9 cells of SPEC §4.6, 3 splits, 4 metrics
+    assert len(df) == 10 * 3 * 4
+    assert set(df["strategy"]) == {
+        "baseline",
+        "UNDERB",
+        "UNDERT",
+        "UNDERTPhi",
+        "OVERB",
+        "OVERT",
+        "OVERTPhi",
+        "SMOTEB",
+        "SMOTET",
+        "SMOTETPhi",
+    }
+    assert set(df["metric"]) == {"precision_phi", "recall_phi", "f1_phi", "sera"}
+    assert df.groupby(["strategy", "split", "metric"]).size().eq(1).all()
+    assert np.isfinite(df["value"]).all()
+
+
+def test_evaluate_refits_phi_on_each_training_window() -> None:
+    from sklearn.linear_model import LinearRegression
+
+    X, y = _ds01_embedded()
+    splits = list(temporal_split(X, y, n_reps=2, random_state=1))
+    seen: list[np.ndarray] = []
+
+    def spy(y_true: np.ndarray, y_pred: np.ndarray, *, relevance: np.ndarray) -> float:
+        seen.append(relevance)
+        return 0.0
+
+    evaluate(
+        LinearRegression(),
+        X,
+        y,
+        strategies={"baseline": None},
+        metrics={"spy": spy},
+        splitter=lambda X, y: iter(splits),
+    )
+    # phi comes from the training target, never from the test target (ADR-0008)
+    for cp, (_, y_tr, _, y_te) in zip(seen, splits, strict=True):
+        np.testing.assert_array_equal(cp, _relevance.control_points(y_tr))
+        assert not np.array_equal(cp, _relevance.control_points(y_te))

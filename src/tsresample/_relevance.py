@@ -86,6 +86,8 @@ def resolve(relevance: object, y: NDArray[np.float64]) -> NDArray[np.float64]:
                 f"got {relevance!r}."
             )
         return phi(y, control_points(y))
+    if not callable(relevance) and np.ndim(relevance) == 2:  # type: ignore[arg-type]
+        return phi(y, as_control_points(np.asarray(relevance, dtype=np.float64)))
     got = relevance(y) if callable(relevance) else relevance
     p = np.asarray(got, dtype=np.float64)
     if p.shape != y.shape:
@@ -93,3 +95,19 @@ def resolve(relevance: object, y: NDArray[np.float64]) -> NDArray[np.float64]:
     if not np.all((p >= 0) & (p <= 1)):
         raise ValueError("relevance: values must lie in [0, 1] (and not be NaN).")
     return p
+
+
+def as_control_points(cp: NDArray[np.float64]) -> NDArray[np.float64]:
+    """Validate user control points: shape (3, 2), or (3, 3) with zero slopes.
+
+    ``(3, 3)`` is R's ``phi.control`` layout; the slopes must be 0 (ADR-0002).
+    """
+    if cp.shape not in ((3, 2), (3, 3)):
+        raise ValueError(
+            f"control points: expected shape (3, 2) [(x, phi), ...]; got {cp.shape}."
+        )
+    if cp.shape == (3, 3) and np.any(cp[:, 2] != 0):
+        raise ValueError("control points: slopes (third column) must all be 0.")
+    if not np.all((cp[:, 1] >= 0) & (cp[:, 1] <= 1)):
+        raise ValueError("control points: phi values must lie in [0, 1].")
+    return cp[:, :2]

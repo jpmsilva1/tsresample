@@ -198,7 +198,7 @@ class TimeSeriesResampler(BaseEstimator):
 | `strategy` | `"under"` (Alg. 2/6/10), `"over"` (Alg. 3/7/11), `"smote"` (Alg. 5/8/12). |
 | `bias` | `None` = no bias (B variants), `"temporal"` = T variants, `"temporal+phi"` = TPhi variants. |
 | `rel_threshold` | `t_R`, default 0.9 (the authors' `thr.rel`). Bumps are classified by their **mean φ** against `t_R` (§4.2), not case by case. |
-| `relevance` | `"auto"` fits φ from `y` (§4.1). An array of shape `(n,)` supplies φ directly. A callable is invoked as `f(y) -> ndarray` and must return values in `[0, 1]`. |
+| `relevance` | `"auto"` fits φ from `y` (§4.1). An array of shape `(n,)` supplies φ directly. A callable is invoked as `f(y) -> ndarray` and must return values in `[0, 1]`. An array of shape `(3, 2)` is φ's control points (ADR-0016). |
 | `k` | Nearest-neighbour count for `strategy="smote"`. Ignored otherwise. |
 | `o`, `u` | R's `C.perc` multipliers. `None` (default) = `"balance"` (§4.4). Explicit: `u` scales normal bumps, `o` rare bumps, with the per-strategy meaning in §4.4. |
 | `r_quirks` | `True` (default) reproduces R's two SMOTE quirks: the seed/neighbour index ordering in T/TPhi and last-predictor target weights (§4.5, ADR-0013). `False` gives the paper-intent reading. |
@@ -229,11 +229,11 @@ def precision_phi(y_true, y_pred, *, relevance="auto", rel_threshold=0.9) -> flo
 def recall_phi   (y_true, y_pred, *, relevance="auto", rel_threshold=0.9) -> float: ...
 def f1_phi       (y_true, y_pred, *, relevance="auto", rel_threshold=0.9,
                   beta=1.0) -> float: ...
-def sera         (y_true, y_pred, *, relevance="auto",
+def sera         (y_true, y_pred, *, relevance="auto", step=0.001,
                   return_curve=False) -> float | tuple[NDArray, NDArray]: ...
 ```
 
-`relevance` takes the same three forms as the resampler (`"auto"`, an array, a callable)
+`relevance` takes the same forms as the resampler, plus control points of shape `(3, 2)` (ADR-0016; `metrics.control_points(y_train)` fits them). `precision_phi`/`recall_phi`/`f1_phi` need `"auto"` or control points, because they evaluate φ(ŷ) and `U`'s bumps; `sera` takes any form. The original text: `relevance` takes the same three forms as the resampler (`"auto"`, an array, a callable)
 and resolves through the same `_relevance.py`, so a case that the resampler treated as
 rare is scored as rare. When `"auto"`, φ is fit on `y_true`. For precision and recall,
 `rel_threshold` is an **event** threshold applied case by case with `≥` (§4.7). This is not

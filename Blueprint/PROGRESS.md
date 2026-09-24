@@ -53,6 +53,7 @@ Known issues that don't block any step. Close one by stating the resolution and 
 | DS05 φ control points | 5/90 splits miss on last-bit precision at the ±0.08 fences; needs a full-precision re-export from R. Excluded from G0 Test A. | `Blueprint/docs/REPLICATION.md` §2 |
 | DS13 imputation | Lag-window kNN gives 9.19–10.67 % rare vs the paper's 11.1 %. G4 excludes DS13 from strict checks. | ADR-0010 amendment; `Blueprint/docs/REPLICATION.md` §4.2b |
 | `[AUDIT]`-tagged SPEC items | Bins, counts, bias, SMOTE, replacement. Each is confirmed by its node's G3/G4 check. | ADR-0012, 0013; amended 0004/0006/0007 |
+| Gate C command hardcodes the floor | `Blueprint/ops/QUALITY_GATES.md` §3 writes `--cov-fail-under=90`, contradicting §1 ("stated once", read from `pyproject.toml`). CI reads `fail_under` from `pyproject.toml`; the §3 text should drop the flag. Found in step 1 review. | `Blueprint/ops/QUALITY_GATES.md` §3 |
 
 ## Rules
 

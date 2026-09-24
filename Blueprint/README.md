@@ -22,7 +22,6 @@ not `docs/SPEC.md`). Paths without the `Blueprint/` prefix (`src/`, `tests/`,
 | `ops/RESEARCH_VERIFICATION.md` | How to verify a research (non-code) claim. |
 | `tests/fixtures/` | Committed oracles: `phi_oracle.json` (gate G0), `metric_oracle.json` (gate G0b). The library's tests read them from here. |
 | `replication/` | Vendored source series and a subset of recorded R outputs. `MANIFEST.csv` lists each file's source and validity (one folder is flagged CONTAMINATED). |
-| `pyproject.toml` | The build configuration. Step 1 moves it to the repo root. |
 
 **External data.** Gate G4 (step 11) and re-running research probes need the full
 recorded R experiment. It is in the public repo

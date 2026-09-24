@@ -46,6 +46,11 @@ tsresample = "tsresample.pipeline.cli:main"
 [tool.hatch.version]
 path = "src/tsresample/__init__.py"
 
+[tool.hatch.build.targets.sdist]
+# Library only: Blueprint/ (verification data, ~80 MB) never ships to PyPI.
+# tests/ are left out too: they read oracles from Blueprint/.
+include = ["/src", "/README.md", "/LICENSE", "/pyproject.toml"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/tsresample"]
 

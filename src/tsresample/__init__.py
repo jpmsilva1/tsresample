@@ -5,6 +5,7 @@ Implements Moniz, Branco & Torgo (2017). The public API (``embed``,
 """
 
 from tsresample.embed import embed
+from tsresample.resampler import TimeSeriesResampler
 
-__all__ = ["__version__", "embed"]
+__all__ = ["TimeSeriesResampler", "__version__", "embed"]
 __version__ = "0.0.1"

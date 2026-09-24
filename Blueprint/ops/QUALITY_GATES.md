@@ -46,7 +46,7 @@ testing effort lands on the critical paths rather than on every private helper.
 | `_sample.targets(bumps, N, strategy, o, u) -> list[int]` | direct | the `trunc` / `round5` / `round_even` helpers alone |
 | `_sample.resample(bumps, N, strategy, o, u, time_index, phi, bias, rng) -> (idx, smote jobs)` (added in step 5: performs the draws so `resampler.py` stays arithmetic-free) | direct | — |
 | `_synth.synthesize(..., r_quirks) -> (X_new, y_new)` | direct, both `r_quirks` settings | distance helper |
-| `TimeSeriesResampler.fit_resample(X, y)` | public call | dispatch internals |
+| `TimeSeriesResampler.fit_resample(X, y)` | public call | dispatch internals, `_sample.assemble` (ordering is asserted through the public call) |
 | `metrics.{precision_phi,recall_phi,f1_phi,sera}` | public call | `_utility` internals |
 | `pipeline.{load_series,imbalance_summary,temporal_split,evaluate}` | public call | CSV parsing details |
 | CLI | subprocess, exit codes + stdout | argparse wiring |

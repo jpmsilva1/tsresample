@@ -72,3 +72,24 @@ def phi(y: ArrayLike, cp: NDArray[np.float64]) -> NDArray[np.float64]:
         y <= x_lo, p_lo, np.where(y >= x_hi, p_hi, inside)
     )
     return out
+
+
+def resolve(relevance: object, y: NDArray[np.float64]) -> NDArray[np.float64]:
+    """phi for ``y`` from a ``relevance`` argument: "auto", an array or a callable.
+
+    Shared by the resampler and the metrics, so both call the same cases rare.
+    """
+    if isinstance(relevance, str):
+        if relevance != "auto":
+            raise ValueError(
+                "relevance: expected 'auto', an array or a callable; "
+                f"got {relevance!r}."
+            )
+        return phi(y, control_points(y))
+    got = relevance(y) if callable(relevance) else relevance
+    p = np.asarray(got, dtype=np.float64)
+    if p.shape != y.shape:
+        raise ValueError(f"relevance: expected shape {y.shape}; got {p.shape}.")
+    if not np.all((p >= 0) & (p <= 1)):
+        raise ValueError("relevance: values must lie in [0, 1] (and not be NaN).")
+    return p

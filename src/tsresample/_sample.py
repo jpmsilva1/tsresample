@@ -131,3 +131,19 @@ def resample(
             if n_out > size:
                 jobs.append((b, c))
     return np.concatenate(parts), jobs
+
+
+def assemble(
+    X: NDArray[np.float64],
+    y: NDArray[np.float64],
+    idx: NDArray[np.intp],
+    X_syn: NDArray[np.float64],
+    y_syn: NDArray[np.float64],
+    seeds: NDArray[np.intp],
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+    """Rows in time order, each synthetic case right after its seed (SPEC §2.2)."""
+    # Originals/copies sort at their time index, synthetic cases at seed + 0.5;
+    # the stable sort keeps generation order among ties.
+    key = np.concatenate([idx.astype(np.float64), seeds + 0.5])
+    order = np.argsort(key, kind="stable")
+    return np.vstack([X[idx], X_syn])[order], np.concatenate([y[idx], y_syn])[order]

@@ -90,4 +90,4 @@ select = ["E", "F", "I", "N", "UP", "B", "SIM", "NPY", "RUF"]
 
 [tool.ruff.lint.pep8-naming]
 # SPEC notation: X (sklearn feature matrix), N (total cases), t_R (threshold).
-extend-ignore-names = ["X", "X_*", "N", "t_R"]
+extend-ignore-names = ["X", "X*", "N", "t_R"]

@@ -1,0 +1,215 @@
+24 task(s): ['ds1', 'ds10', 'ds11', 'ds12', 'ds13', 'ds14', 'ds15', 'ds16', 'ds17', 'ds18', 'ds19', 'ds2', 'ds20', 'ds21', 'ds22', 'ds23', 'ds24', 'ds3', 'ds4', 'ds5', 'ds6', 'ds7', 'ds8', 'ds9']
+52 workflow(s) common to all tasks
+
+WLdef(exp, "mc.lm", "F1", 0.05)
+              Win  sigWin  Loss  SigLoss  Tie
+mc.lm_UNDERB   19      19     5        4    0
+mc.lm_OVERB    19      19     5        1    0
+mc.lm_SMOTEB   20      19     4        3    0
+
+WLdef(exp, "mc.svm", "F1", 0.05)
+               Win  sigWin  Loss  SigLoss  Tie
+mc.svm_UNDERB   11      10    13       10    0
+mc.svm_OVERB    14      11    10        6    0
+mc.svm_SMOTEB   11       9    13        8    0
+
+WLdef(exp, "mc.mars", "F1", 0.05)
+                Win  sigWin  Loss  SigLoss  Tie
+mc.mars_UNDERB   15      13     9        7    0
+mc.mars_OVERB    19      18     5        4    0
+mc.mars_SMOTEB   19      17     5        4    0
+
+WLdef(exp, "mc.rf", "F1", 0.05)
+              Win  sigWin  Loss  SigLoss  Tie
+mc.rf_UNDERB   18      17     6        4    0
+mc.rf_OVERB    19      14     5        4    0
+mc.rf_SMOTEB   20      20     4        2    0
+
+WLdef(exp, "mc.rpart", "F1", 0.05)
+                 Win  sigWin  Loss  SigLoss  Tie
+mc.rpart_UNDERB   12       9    12        2    0
+mc.rpart_OVERB    14      11    10        7    0
+mc.rpart_SMOTEB   11      10    13        6    0
+
+WLdef(exp, "mc.lm_UNDERB", "F1", 0.05)
+                 Win  sigWin  Loss  SigLoss  Tie
+mc.lm_UNDERT      18       2     6        0    0
+mc.lm_UNDERTPhi   14       6    10        2    0
+
+WLdef(exp, "mc.svm_UNDERB", "F1", 0.05)
+                  Win  sigWin  Loss  SigLoss  Tie
+mc.svm_UNDERT      12       2    12        1    0
+mc.svm_UNDERTPhi   16       8     8        3    0
+
+WLdef(exp, "mc.mars_UNDERB", "F1", 0.05)
+                   Win  sigWin  Loss  SigLoss  Tie
+mc.mars_UNDERT      16       1     8        0    0
+mc.mars_UNDERTPhi   15       7     9        1    0
+
+WLdef(exp, "mc.rf_UNDERB", "F1", 0.05)
+                 Win  sigWin  Loss  SigLoss  Tie
+mc.rf_UNDERT      14       0    10        0    0
+mc.rf_UNDERTPhi   14       5    10        1    0
+
+WLdef(exp, "mc.rpart_UNDERB", "F1", 0.05)
+                    Win  sigWin  Loss  SigLoss  Tie
+mc.rpart_UNDERT      11       1    13        0    0
+mc.rpart_UNDERTPhi   16       4     8        2    0
+
+WLdef(exp, "mc.lm_OVERB", "F1", 0.05)
+                Win  sigWin  Loss  SigLoss  Tie
+mc.lm_OVERT      12       4    12        7    0
+mc.lm_OVERTPhi   10       5    14        7    0
+
+WLdef(exp, "mc.svm_OVERB", "F1", 0.05)
+                 Win  sigWin  Loss  SigLoss  Tie
+mc.svm_OVERT       8       4    16        7    0
+mc.svm_OVERTPhi    7       4    17       10    0
+
+WLdef(exp, "mc.mars_OVERB", "F1", 0.05)
+                  Win  sigWin  Loss  SigLoss  Tie
+mc.mars_OVERT       8       6    16        4    0
+mc.mars_OVERTPhi    9       3    15        2    0
+
+WLdef(exp, "mc.rf_OVERB", "F1", 0.05)
+                Win  sigWin  Loss  SigLoss  Tie
+mc.rf_OVERT       8       1    16        6    0
+mc.rf_OVERTPhi    8       1    16        3    0
+
+WLdef(exp, "mc.rpart_OVERB", "F1", 0.05)
+                   Win  sigWin  Loss  SigLoss  Tie
+mc.rpart_OVERT       8       1    16        4    0
+mc.rpart_OVERTPhi   11       2    13        4    0
+
+WLdef(exp, "mc.lm_SMOTEB", "F1", 0.05)
+                 Win  sigWin  Loss  SigLoss  Tie
+mc.lm_SMOTET       6       3    18       14    0
+mc.lm_SMOTETPhi    6       2    18       10    0
+
+WLdef(exp, "mc.svm_SMOTEB", "F1", 0.05)
+                  Win  sigWin  Loss  SigLoss  Tie
+mc.svm_SMOTET      10       3    14       13    0
+mc.svm_SMOTETPhi   11      10    13       10    0
+
+WLdef(exp, "mc.mars_SMOTEB", "F1", 0.05)
+                   Win  sigWin  Loss  SigLoss  Tie
+mc.mars_SMOTET       9       4    15       11    0
+mc.mars_SMOTETPhi   13       7    11        7    0
+
+WLdef(exp, "mc.rf_SMOTEB", "F1", 0.05)
+                 Win  sigWin  Loss  SigLoss  Tie
+mc.rf_SMOTET       7       2    17       12    0
+mc.rf_SMOTETPhi    9       6    15       12    0
+
+WLdef(exp, "mc.rpart_SMOTEB", "F1", 0.05)
+                    Win  sigWin  Loss  SigLoss  Tie
+mc.rpart_SMOTET       6       0    18       12    0
+mc.rpart_SMOTETPhi    9       4    15       10    0
+
+WLdef(exp, "mc.arima", "F1", 0.05)
+                    Win  sigWin  Loss  SigLoss  Tie
+mc.lm                15      10     9        6    0
+mc.lm_UNDERB         20      19     4        4    0
+mc.lm_UNDERT         21      20     3        3    0
+mc.lm_UNDERTPhi      20      19     4        4    0
+mc.lm_OVERB          21      20     3        3    0
+mc.lm_OVERT          21      20     3        2    0
+mc.lm_OVERTPhi       21      20     3        2    0
+mc.lm_SMOTEB         21      21     3        3    0
+mc.lm_SMOTET         20      19     4        3    0
+mc.lm_SMOTETPhi      20      19     4        4    0
+mc.svm               21      21     3        1    0
+mc.svm_UNDERB        21      20     3        1    0
+mc.svm_UNDERT        21      20     3        1    0
+mc.svm_UNDERTPhi     23      19     1        1    0
+mc.svm_OVERB         20      20     4        1    0
+mc.svm_OVERT         20      20     4        2    0
+mc.svm_OVERTPhi      20      20     4        2    0
+mc.svm_SMOTEB        20      20     4        2    0
+mc.svm_SMOTET        20      20     4        3    0
+mc.svm_SMOTETPhi     18      18     6        4    0
+mc.mars              16      15     8        3    0
+mc.mars_UNDERB       21      17     3        2    0
+mc.mars_UNDERT       21      16     3        2    0
+mc.mars_UNDERTPhi    21      19     3        3    0
+mc.mars_OVERB        21      18     3        2    0
+mc.mars_OVERT        21      16     3        2    0
+mc.mars_OVERTPhi     21      17     3        2    0
+mc.mars_SMOTEB       23      19     1        1    0
+mc.mars_SMOTET       18      17     6        3    0
+mc.mars_SMOTETPhi    20      18     4        3    0
+mc.rf                12      10    12        7    0
+mc.rf_UNDERB         18      16     6        5    0
+mc.rf_UNDERT         17      16     7        4    0
+mc.rf_UNDERTPhi      19      19     5        4    0
+mc.rf_OVERB          16      15     8        2    0
+mc.rf_OVERT          14      11    10        4    0
+mc.rf_OVERTPhi       14      11    10        3    0
+mc.rf_SMOTEB         21      21     3        2    0
+mc.rf_SMOTET         21      19     3        1    0
+mc.rf_SMOTETPhi      21      19     3        3    0
+mc.rpart             17      17     7        4    0
+mc.rpart_UNDERB      20      17     4        4    0
+mc.rpart_UNDERT      19      17     5        4    0
+mc.rpart_UNDERTPhi   20      17     4        4    0
+mc.rpart_OVERB       18      17     6        4    0
+mc.rpart_OVERT       18      18     6        4    0
+mc.rpart_OVERTPhi    18      18     6        3    0
+mc.rpart_SMOTEB      20      17     4        3    0
+mc.rpart_SMOTET      16      15     8        5    0
+mc.rpart_SMOTETPhi   18      16     6        5    0
+mc.BDES              10      10    14       14    0
+
+WLdef(exp, "mc.BDES", "F1", 0.05)
+                    Win  sigWin  Loss  SigLoss  Tie
+mc.lm                14      14    10        9    0
+mc.lm_UNDERB         22      22     2        2    0
+mc.lm_UNDERT         22      22     2        2    0
+mc.lm_UNDERTPhi      22      22     2        2    0
+mc.lm_OVERB          22      21     2        2    0
+mc.lm_OVERT          22      21     2        2    0
+mc.lm_OVERTPhi       22      21     2        2    0
+mc.lm_SMOTEB         22      21     2        2    0
+mc.lm_SMOTET         22      21     2        2    0
+mc.lm_SMOTETPhi      22      20     2        2    0
+mc.svm               23      22     1        1    0
+mc.svm_UNDERB        22      22     2        1    0
+mc.svm_UNDERT        22      22     2        1    0
+mc.svm_UNDERTPhi     22      22     2        2    0
+mc.svm_OVERB         22      22     2        2    0
+mc.svm_OVERT         22      22     2        2    0
+mc.svm_OVERTPhi      22      22     2        1    0
+mc.svm_SMOTEB        22      22     2        1    0
+mc.svm_SMOTET        22      21     2        2    0
+mc.svm_SMOTETPhi     22      21     2        2    0
+mc.mars              20      18     4        2    0
+mc.mars_UNDERB       20      18     4        4    0
+mc.mars_UNDERT       20      18     4        4    0
+mc.mars_UNDERTPhi    20      18     4        3    0
+mc.mars_OVERB        22      22     2        2    0
+mc.mars_OVERT        22      22     2        2    0
+mc.mars_OVERTPhi     21      21     3        3    0
+mc.mars_SMOTEB       22      22     2        2    0
+mc.mars_SMOTET       22      22     2        2    0
+mc.mars_SMOTETPhi    21      21     3        2    0
+mc.rf                11      11    13       11    0
+mc.rf_UNDERB         18      18     6        3    0
+mc.rf_UNDERT         17      17     7        4    0
+mc.rf_UNDERTPhi      17      17     7        5    0
+mc.rf_OVERB          16      16     8        4    0
+mc.rf_OVERT          15      15     9        8    0
+mc.rf_OVERTPhi       15      14     9        8    0
+mc.rf_SMOTEB         22      22     2        2    0
+mc.rf_SMOTET         21      21     3        3    0
+mc.rf_SMOTETPhi      21      21     3        3    0
+mc.rpart             22      22     2        2    0
+mc.rpart_UNDERB      22      21     2        2    0
+mc.rpart_UNDERT      22      21     2        2    0
+mc.rpart_UNDERTPhi   22      21     2        2    0
+mc.rpart_OVERB       21      21     3        3    0
+mc.rpart_OVERT       21      21     3        3    0
+mc.rpart_OVERTPhi    21      21     3        3    0
+mc.rpart_SMOTEB      22      21     2        2    0
+mc.rpart_SMOTET      21      21     3        3    0
+mc.rpart_SMOTETPhi   21      21     3        3    0
+mc.arima             14      14    10       10    0

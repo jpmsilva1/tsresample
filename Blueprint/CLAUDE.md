@@ -37,7 +37,7 @@ accident.
 **3 — Cleanroom. Never open a quarantined path.** The list is in `Blueprint/docs/PROVENANCE.md` §1:
 `UBL`, `uba`, `smogn`, `ImbalanceMetrics`, `IRonPy/src`, `IRonPy/iron`, the vendored
 resampler bodies in `Exps.R` (lines ~1700–2450), and the colleague's Python port
-(`TSResampStrat_Python/Py_Code/tsresamp/`). This is a licensing boundary, not a
+(the code under `python_port/`; see `python_port/QUARANTINE.md`). This is a licensing boundary, not a
 style preference — the library is MIT and the references are GPL. When you need a constant
 the paper does not give, run an oracle probe (§Research below). Never "just check how UBL
 does it." Your tool-call record is auditable and will be audited at every gate.

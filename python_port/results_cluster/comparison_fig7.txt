@@ -1,0 +1,58 @@
+Fig. 7 read: 1232 of 1248 points (99 %); the rest are hidden behind another point or off the panel
+
+Overall: mean |diff| 0.025, median 0.012, within 0.05: 87 %, within 0.10: 94 %, bias (ours - article) -0.003
+
+Per model:
+           n  abs_mean   bias  within_0.05
+model                                     
+BDES    24.0     0.077  0.002        0.583
+arima   21.0     0.109  0.007        0.333
+lm     230.0     0.050 -0.002        0.648
+mars   238.0     0.015 -0.002        0.971
+rf     240.0     0.020 -0.006        0.917
+rpart  240.0     0.014 -0.004        0.967
+svm    239.0     0.014 -0.004        0.958
+
+Per strategy:
+              n  abs_mean   bias  within_0.05
+strategy                                     
+O_B       117.0     0.024 -0.002        0.872
+O_T       119.0     0.024 -0.002        0.866
+O_TPhi    119.0     0.022 -0.002        0.882
+SM_B      118.0     0.017 -0.002        0.958
+SM_T      119.0     0.017 -0.002        0.950
+SM_TPhi   119.0     0.018 -0.004        0.899
+U_B       119.0     0.021 -0.004        0.924
+U_T       119.0     0.021 -0.007        0.916
+U_TPhi    119.0     0.022 -0.007        0.899
+baseline  164.0     0.054 -0.003        0.689
+
+Per data set (mean |diff| over the workflows read):
+  DS1:0.011  DS2:0.021  DS3:0.021  DS4:0.034  DS5:0.027  DS6:0.019  DS7:0.026  DS8:0.035  DS9:0.040  DS10:0.053  DS11:0.030  DS12:0.022  DS13:0.019  DS14:0.034  DS15:0.016  DS16:0.014  DS17:0.015  DS18:0.018  DS19:0.014  DS20:0.020  DS21:0.028  DS22:0.023  DS23:0.044  DS24:0.015
+
+Largest |diff| (ours vs article):
+  DS4   mc.BDES              ours=0.627 article=0.194 diff=+0.433
+  DS5   mc.arima             ours=0.070 article=0.451 diff=-0.380
+  DS4   mc.lm                ours=0.577 article=0.244 diff=+0.332
+  DS7   mc.lm                ours=0.541 article=0.224 diff=+0.317
+  DS7   mc.arima             ours=0.396 article=0.103 diff=+0.293
+  DS4   mc.arima             ours=0.568 article=0.279 diff=+0.289
+  DS8   mc.BDES              ours=0.474 article=0.193 diff=+0.280
+  DS5   mc.BDES              ours=0.256 article=0.489 diff=-0.233
+  DS10  mc.lm_SMOTEB         ours=0.666 article=0.434 diff=+0.232
+  DS10  mc.lm_UNDERB         ours=0.647 article=0.430 diff=+0.217
+  DS10  mc.lm_OVERTPhi       ours=0.670 article=0.457 diff=+0.213
+  DS6   mc.lm                ours=0.000 article=0.210 diff=-0.210
+  DS10  mc.lm_OVERT          ours=0.670 article=0.461 diff=+0.210
+  DS10  mc.lm_OVERB          ours=0.669 article=0.470 diff=+0.199
+  DS10  mc.lm_UNDERTPhi      ours=0.649 article=0.452 diff=+0.197
+
+Mean F1 over the data sets read, ours | article:
+                 base         UNDERB         UNDERT      UNDERTPhi          OVERB          OVERT       OVERTPhi         SMOTEB         SMOTET      SMOTETPhi
+lm          0.26|0.26      0.49|0.49      0.49|0.50      0.49|0.50      0.49|0.49      0.49|0.49      0.49|0.49      0.50|0.50      0.49|0.49      0.49|0.49
+svm         0.45|0.46      0.48|0.48      0.48|0.48      0.48|0.48      0.49|0.49      0.48|0.49      0.48|0.49      0.48|0.48      0.47|0.47      0.46|0.46
+mars        0.35|0.36      0.42|0.42      0.43|0.43      0.43|0.44      0.49|0.49      0.49|0.49      0.49|0.49      0.49|0.49      0.48|0.49      0.48|0.48
+rf          0.27|0.29      0.41|0.42      0.41|0.42      0.41|0.42      0.37|0.38      0.36|0.36      0.36|0.36      0.50|0.50      0.48|0.48      0.48|0.49
+rpart       0.45|0.46      0.48|0.48      0.48|0.48      0.48|0.49      0.48|0.48      0.48|0.48      0.48|0.48      0.48|0.49      0.47|0.47      0.47|0.48
+mc.arima   ours 0.275 | article 0.268  (n=21)
+mc.BDES    ours 0.120 | article 0.118  (n=24)

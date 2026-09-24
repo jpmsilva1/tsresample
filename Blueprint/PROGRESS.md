@@ -52,6 +52,7 @@ Known issues that don't block any step. Close one by stating the resolution and 
 | DS19 φ = (1, 0, 0) utility residual | 312 splits don't match R (worst 0.83). Excluded from `metric_oracle.json`; the metric docstrings must say so. | ADR-0014 "Residual" |
 | DS05 φ control points | 5/90 splits miss on last-bit precision at the ±0.08 fences; needs a full-precision re-export from R. Excluded from G0 Test A. | `Blueprint/docs/REPLICATION.md` §2 |
 | DS13 imputation | Lag-window kNN gives 9.19–10.67 % rare vs the paper's 11.1 %. G4 excludes DS13 from strict checks. | ADR-0010 amendment; `Blueprint/docs/REPLICATION.md` §4.2b |
+| `python_port/` vendored | The GPL-derived Python replication now lives in `python_port/` (quarantined). Step 1 must keep it out of the library's build, test collection (`testpaths`), coverage, lint and type checks. | `python_port/QUARANTINE.md`; PROVENANCE §1 |
 | `[AUDIT]`-tagged SPEC items | Bins, counts, bias, SMOTE, replacement. Each is confirmed by its node's G3/G4 check. | ADR-0012, 0013; amended 0004/0006/0007 |
 
 ## Rules

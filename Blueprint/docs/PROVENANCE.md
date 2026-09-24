@@ -31,7 +31,7 @@ These contain GPL-licensed source. Reading them taints the implementation.
 | `<replication repo>/src/original/R_Code/Exps.R` lines ~1700–2450 | UBL-derived, GPL | Vendored resampler bodies |
 | `<replication repo>/src/adapted/Exps.R` (same region) | UBL-derived, GPL | Same |
 | any `UBL`, `uba`, `smogn` source checkout | GPL | — |
-| `TSResampStrat_Python/Py_Code/tsresamp/` (colleague's Python port, Drive) | GPL-derived (line-by-line port of `uba` C, `Exps.R` bodies, `UBL::neighbours`) | Complete working port; its `REVIEW.md`/`COMPARISON.md`/`results_cluster/` are numbers + prose and are permitted |
+| `python_port/Py_Code/`, `python_port/tests/`, `python_port/tools/`, `python_port/R_replication/*.R`, `python_port/R_replication/audit/` (colleague's Python port, vendored in this repo; previously `TSResampStrat_Python/Py_Code/tsresamp/` on Drive) | GPL-derived (line-by-line port of `uba` C, `Exps.R` bodies, `UBL::neighbours`; MARS ported from `earth`, GPL-3) | Complete working port. Its `*.md` reports, `results_cluster/` and `R_replication/results/` are numbers + prose and are permitted (`python_port/QUARANTINE.md`) |
 
 The `Exps.R` entry is a **partial** quarantine: the file's top-level experiment protocol
 (function signatures, default arguments, `EstimationTask` configuration) is ordinary

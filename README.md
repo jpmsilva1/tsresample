@@ -49,5 +49,6 @@ stop and open an issue rather than working around it.
 | `CLAUDE.md`, `AGENTS.md` | Entry points that agent tools load automatically (Claude Code; Codex, Cursor and others). Both point into `Blueprint/`. |
 | `.claude/agents/` | The four agent roles (`implementer`, `researcher`, `reviewer`, `replicator`), auto-discovered by Claude Code. With other tools, use them as role prompts. |
 | `.github/` | PR checklist template and code owners. |
+| `python_port/` | The complete Python replication of the paper (TCC, @danielreinaux): a GPL-derived port of the authors' R experiment, **not** part of the library and **quarantined** (`python_port/QUARANTINE.md`, `Blueprint/docs/PROVENANCE.md` §1). Its reports and result tables are numbers + prose and may be read. |
 
 Library code (`src/`, `tests/`, `pyproject.toml`) arrives at the repo root in step 1.

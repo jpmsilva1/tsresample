@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+results/*.pkl
+results/**/*.pkl
+results/*.log
+results/*.csv
+results/ckpt*/
+R_replication/logs/
+results/**/*.log
+results/apuana_v2/
+Data/*.pkl

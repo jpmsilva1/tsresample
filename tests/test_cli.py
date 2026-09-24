@@ -3,6 +3,7 @@
 import contextlib
 import csv
 import io
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -21,7 +22,8 @@ def _run(*args: object) -> subprocess.CompletedProcess[str]:
 
 
 def test_installed_console_script_runs(tmp_path: Path) -> None:
-    exe = Path(sys.executable).with_name("tsresample")
+    exe = shutil.which("tsresample", path=str(Path(sys.executable).parent))
+    assert exe, "console script not installed next to the interpreter"
     p = _csv(tmp_path, ["4", "1", "9", "2", "100", "3", "8", "5", "7", "6"])
     res = subprocess.run(
         [exe, p, "--target", "value", "--no-embed"], capture_output=True, text=True

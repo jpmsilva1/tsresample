@@ -72,6 +72,8 @@ files = ["src"]
 [tool.ruff]
 line-length = 88
 target-version = "py310"
+# Blueprint/ is the verification kit (probes, fixtures), not library code.
+extend-exclude = ["Blueprint"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "NPY", "RUF"]

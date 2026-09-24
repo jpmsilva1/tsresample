@@ -40,7 +40,7 @@ Rows in the same wave can run in parallel sessions.
 | 9b | Pipeline API | 9 | 8, 9a | Done (2026-09-24, @jpmsilva1) | local branch `node/9b-pipeline-api`; tidy frame one row per (strategy, split, metric); phi refit per training window (test-phi mutation caught); imbalance_summary uses >= (ADR-0010) and matches Table 1 at MAE <= 0.25 pp on 18 datasets, no count shift vs imbalance_eval's rule; evaluate gained random_state (SPEC §2.4); 249 tests, 100 % cov; inline self-review |
 | 10 | CLI + `MIGRATION.md` | 10 | 9b | Done (2026-09-24, @jpmsilva1) | local branch `node/10-cli`; CLI mirrors imbalance_eval flags + manifest; --k translates 1:1 (DS01 N=720); usage errors exit 2 with messages; docs/MIGRATION.md lists every behavioural difference; 255 tests, 100 % cov; inline self-review |
 | 11 | Replication (gate G4 + `replication_report.md`) | 10 | 8, 9b | Done (2026-09-24, @jpmsilva1) | local branch `node/11-replication`; `replication_report.md`: R4 10800/10800 exact, R2 96.2 %, R3 95.0 %, R5 9/9 strategies match (paper conclusion reproduced), R1 mean 0.880 but DS19 0.467 < 0.6 (reported, open item); lm learner, r_quirks=True; found and fixed a mixed-date-format bug in load_series |
-| 12 | Docs | 11 | 10 | Not started | |
+| 12 | Docs | 11 | 10 | Done (2026-09-24, @jpmsilva1) | local branch `node/12-docs`; README (install, 30-second example, three layers, CSV-to-table, CLI, replication caveat, citation); docs/api.md generated from docstrings and kept in sync by test; CITATION.cff; docs/deviations.md; README examples executed by tests; fresh-venv wheel install runs the quickstart and CLI; 260 tests, 100 % cov; inline self-review |
 | 13 | Release | 12 | 0, 11, 12 | Not started | |
 
 ## Open items

@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from tsresample import _bins, _relevance
+from tsresample import _bins, _prefs, _relevance
 
 
 def test_control_points_use_tukey_hinges_and_whisker_ends() -> None:
@@ -109,3 +109,53 @@ def test_no_rare_or_no_normal_bump_returns_empty_with_warning(
 ) -> None:
     with pytest.warns(UserWarning, match="no rare bump|no normal bump"):
         assert _bins.bumps([1.0, 2, 3], phi, 0.9, rule) == []  # type: ignore[arg-type]
+
+
+# --- preferences (SPEC §4.3, ADR-0012) -------------------------------------------
+# The normal bump of the two-sided example: idx = [5, 2, 0, 4, 6] (value order),
+# phi there = [0.9, 0.2, 0.0, 0.5, 0.9]. Chronological rank within the bump:
+# time 0 -> 1, 2 -> 2, 4 -> 3, 5 -> 4, 6 -> 5 (r = 5);
+# aligned with idx: j = [4, 2, 1, 3, 5].
+NORMAL_BUMP = _bins.Bump(np.array([5, 2, 0, 4, 6]), rare=False, normal=True)
+
+
+@pytest.mark.parametrize(
+    ("bias", "expected"),
+    [
+        (None, [0.2] * 5),
+        # j / r normalised: [4, 2, 1, 3, 5] / 15
+        ("temporal", [4 / 15, 2 / 15, 1 / 15, 3 / 15, 5 / 15]),
+        # j * phi = [3.6, 0.4, 0, 1.5, 4.5] (the /r cancels), sum 10
+        ("temporal+phi", [0.36, 0.04, 0.0, 0.15, 0.45]),
+    ],
+)
+def test_preference_uses_time_rank_within_the_bump(
+    bias: str | None, expected: list[float]
+) -> None:
+    p = _prefs.preference(NORMAL_BUMP, np.arange(7), TWO_SIDED_PHI, bias)  # type: ignore[arg-type]
+    np.testing.assert_allclose(p, expected, rtol=0, atol=1e-12)
+
+
+def test_temporal_phi_falls_back_to_uniform_when_every_phi_is_zero() -> None:
+    # Bump {2, 0}: phi = 0.2, 0.0 -> use phi = 0 everywhere instead.
+    bump = _bins.Bump(np.array([2, 0]), rare=False, normal=True)
+    p = _prefs.preference(bump, np.arange(7), np.zeros(7), "temporal+phi")
+    np.testing.assert_array_equal(p, [0.5, 0.5])
+
+
+def test_no_replacement_draw_takes_all_positive_cases_then_fills_uniformly() -> None:
+    # 2 positive-probability cases, 4 wanted without replacement: R raises; we take
+    # both positives, fill 2 more from the zero-probability cases, and warn.
+    p = np.array([0.0, 0.7, 0.0, 0.3, 0.0])
+    with pytest.warns(UserWarning, match="only 2 cases"):
+        got = _prefs.draw(p, 4, replace=False, rng=np.random.RandomState(0))
+    assert len(set(got.tolist())) == 4
+    assert {1, 3} <= set(got.tolist())
+
+
+def test_draw_follows_p_and_honours_replacement() -> None:
+    rng = np.random.RandomState(0)
+    got = _prefs.draw(np.array([0.0, 1.0, 0.0]), 5, replace=True, rng=rng)
+    np.testing.assert_array_equal(got, [1] * 5)
+    got = _prefs.draw(np.array([0.5, 0.5, 0.0]), 2, replace=False, rng=rng)
+    assert sorted(got.tolist()) == [0, 1]

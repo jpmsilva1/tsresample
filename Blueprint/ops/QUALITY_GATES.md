@@ -42,6 +42,7 @@ testing effort lands on the critical paths rather than on every private helper.
 | `_relevance.phi(y, cp) -> ndarray` | direct, against the oracle | the spline object |
 | `_bins.bumps(y, phi, t_R, rule) -> list[Bump]` (value-space; `rule` ∈ {under/smote, over}) | direct | the sort |
 | `_prefs.preference(bump, time_index, phi, bias) -> ndarray` (within-bump time rank) | direct | normalisation helper |
+| `_prefs.draw(p, size, replace, rng) -> ndarray` (added in step 4: the too-few-positive fallback of SPEC §4.3 needs a draw to test) | direct | — |
 | `_sample.targets(bumps, N, strategy, o, u) -> list[int]` | direct | the `trunc` / `round5` / `round_even` helpers alone |
 | `_synth.synthesize(..., r_quirks) -> (X_new, y_new)` | direct, both `r_quirks` settings | distance helper |
 | `TimeSeriesResampler.fit_resample(X, y)` | public call | dispatch internals |

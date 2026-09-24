@@ -36,7 +36,7 @@ Rows in the same wave can run in parallel sessions.
 | 6 | Synthesis (`_synth.py`) | 6 | 5 | Done (2026-09-24, @jpmsilva1) | local branch `node/6-synthesis`; G3 hand-worked neighbour choice for T and TPhi under both r_quirks, B with k=1, k_eff path, tie midpoint, extra seeds, determinism; mutations (quirk off, nearness tau, per-attribute lambda, no midpoint) all caught; ADR-0013 amendment (column a = X[:,0]); 172 tests, 100 % cov; inline self-review |
 | 7 | Resampler (`resampler.py`, gate G2) | 7 | 6 | Done (2026-09-24, @jpmsilva1) | local branch `node/7-resampler`; G2 green (4 sklearn checks + clone/get_params round-trip); full 3x3 grid on DS01; ordering guarantee, no-bump passthrough, relevance forms, validation; 204 tests, 100 % cov; inline self-review |
 | 8 | Metrics (`metrics.py`, `_utility.py`, gate G0b) | 8 | M0, 7 | Done (2026-09-24, @jpmsilva1) | local branch `node/8-metrics`; G0b green: prec/rec/F1 8/8 recorded cases within 1e-6 abs, SERA 7/7 within 1e-6 rel (step=0.01); spans %Rare 4.8-21.1 (DS05 3.5 % is probe-only, ADR-0014); ADR-0016 (control-point relevance); mutations caught except one equivalent mutant; 233 tests, 100 % cov; inline self-review |
-| 9a | Pipeline I/O | 8 | 7 | Not started | |
+| 9a | Pipeline I/O | 8 | 7 | In progress (2026-09-24, @jpmsilva1) | |
 | 9b | Pipeline API | 9 | 8, 9a | Not started | |
 | 10 | CLI + `MIGRATION.md` | 10 | 9b | Not started | |
 | 11 | Replication (gate G4 + `replication_report.md`) | 10 | 8, 9b | Not started | |

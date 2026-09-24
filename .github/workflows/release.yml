@@ -1,0 +1,80 @@
+name: release
+
+# Tag push (vX.Y.Z) builds, verifies and publishes to PyPI via Trusted Publishing
+# (OIDC; no API token in repo secrets). Nightly runs gate G4 only.
+on:
+  push:
+    tags: ["v*"]
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replication:
+    # Gate G4 (Blueprint/ops/QUALITY_GATES.md §3): blocking for releases, and a
+    # skip counts as a failure, so the oracle is always fetched first.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch the pinned R replication oracle (recorded F1 only)
+        run: |
+          git clone --filter=blob:none --no-checkout \
+            https://github.com/jpmsilva1/ts-resampling-replication.git oracle
+          cd oracle
+          git sparse-checkout init --no-cone
+          echo '/Results (Clean)/Results Data/raw_iterations_by_dataset_v2/' > .git/info/sparse-checkout
+          git checkout b1c7e57d48200212841ac1bb6b054f6fbda77c8b
+          test -d "Results (Clean)/Results Data/raw_iterations_by_dataset_v2"
+      - run: python -m pip install -e ".[dev]"
+      - name: Gate G4
+        env:
+          TSRESAMPLE_REPLICATION_ROOT: ${{ github.workspace }}/oracle
+        run: pytest -m replication tests/test_replication.py -rs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: replication_report
+          path: replication_report.md
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install build
+      - run: python -m build
+      - name: Wheel installs clean with only numpy/scipy/scikit-learn
+        run: |
+          python -m venv /tmp/clean
+          /tmp/clean/bin/pip install dist/*.whl
+          /tmp/clean/bin/python -c "import sys, tsresample; assert 'pandas' not in sys.modules; print(tsresample.__version__)"
+          /tmp/clean/bin/pip show tsresample | grep -E '^Requires: ' | grep -v pandas
+      - name: Tag matches __version__
+        if: startsWith(github.ref, 'refs/tags/')
+        run: test "v$(/tmp/clean/bin/python -c 'import tsresample; print(tsresample.__version__)')" = "${GITHUB_REF_NAME}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [replication, build]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # Trusted Publishing (OIDC)
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

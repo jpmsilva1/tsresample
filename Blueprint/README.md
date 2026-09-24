@@ -13,7 +13,7 @@ not `docs/SPEC.md`). Paths without the `Blueprint/` prefix (`src/`, `tests/`,
 | `PROGRESS.md` | Status of every step, with dates and who did it. **Read first.** |
 | `CLAUDE.md` | Standing engineering rules for every session and every agent tool. |
 | `docs/SPEC.md` | What to build, exactly. Normative. §0 lists what changed and why. |
-| `docs/adr/` | ADR-0001–0015: why each formula or convention is what it is. |
+| `docs/adr/` | ADR-0001–0016: why each formula or convention is what it is. |
 | `docs/REPLICATION.md` | The oracle index, and how each gate proves agreement with R. |
 | `docs/PROVENANCE.md` | What you may not read (GPL quarantine), and the audit log. |
 | `ops/TASK_GRAPH.md` | The steps (nodes), dependencies, tiers, model routing and briefs. |

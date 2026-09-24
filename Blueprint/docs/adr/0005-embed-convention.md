@@ -57,3 +57,23 @@ the recorded experiment's `N`.
   the paper cannot make the substitution by accident.
 - `exog` columns are contemporaneous only — `exog[t]` joins row `t`. Lagging exogenous
   inputs is the caller's job, because only the caller knows which are known-in-advance.
+
+## Amendment — step 2b (2026-09-24): the mapping is `k = m − 2`
+
+The Decision block's mapping is off by one. `embed(series, k)` yields **k + 1**
+predictor columns, and `create.data(ts, m)` yields **m − 1** predictors (R's
+`embed(ts, m)` has m columns; one becomes the target). Equating them gives
+`k = m − 2`, not `m − 1`:
+
+```
+paper's create.data(ts, m)   ≡   embed(series, k=m-2, horizon=1)
+paper's create.data(ts, 10)  ≡   embed(series, k=8,  horizon=1)   # 9 predictors, target series[9:]
+```
+
+Worked check on `ts = 0..19`: `create.data(ts, 10)` has 11 rows; the first row has
+predictors `y0…y8` and target `y9`. `embed(ts, k=8)` gives 11 rows of 9 columns with
+first row `[y8…y0]` and targets `ts[9:]`; `embed(ts, k=9)` gives 10 rows of 10 columns,
+a different learning problem (tested in `tests/test_embed.py`). Row counts:
+`n − 9` for both `create.data(ts, 10)` and `embed(k=8)`, matching gate G0 Test B's
+embedded target `series[9:]` (REPLICATION §2), which already used the correct slice.
+The replication suite uses `k=8, horizon=1` (REPLICATION §4 corrected).

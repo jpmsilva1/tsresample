@@ -18,14 +18,18 @@ from tsresample._prefs import Bias
 
 
 def _neighbours(X: NDArray[np.float64], k: int) -> NDArray[np.intp]:
-    # Row i: the k nearest other rows, nearest first; ties to the lowest index
-    # (stable sort over row order). cdist is exact per pair, so ties stay ties.
-    # ponytail: O(r^2) time in 1024-row chunks; a KD-tree if bumps reach ~1e5 rows.
+    # Row i: the k nearest other rows, nearest first; ties to the lowest index.
+    # Exact per-pair distances (cdist) in row chunks; per row only the candidates
+    # within the k-th smallest distance are sorted (stable, so ties keep index
+    # order). ponytail: O(r^2) time; a KD-tree if bumps reach ~1e6 rows.
     out = np.empty((len(X), k), dtype=np.intp)
     for lo in range(0, len(X), 1024):
         d = cdist(X[lo : lo + 1024], X)
         d[np.arange(len(d)), np.arange(lo, lo + len(d))] = np.inf
-        out[lo : lo + 1024] = np.argsort(d, axis=1, kind="stable")[:, :k]
+        kth = np.partition(d, k - 1, axis=1)[:, k - 1 : k]
+        for i, row in enumerate(d):
+            cand = np.flatnonzero(row <= kth[i])
+            out[lo + i] = cand[np.argsort(row[cand], kind="stable")[:k]]
     return out
 
 

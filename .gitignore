@@ -17,3 +17,4 @@ htmlcov/
 # Per-machine agent state
 .claude/settings.local.json
 .claude/worktrees/
+uv.lock

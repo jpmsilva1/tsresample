@@ -7,15 +7,12 @@ arithmetic order follows R's, so e.g. ``trunc(0.33333 * 15) == 4``.
 """
 
 import math
-from typing import Literal
 
 import numpy as np
 from numpy.typing import NDArray
 
-from tsresample._bins import Bump
+from tsresample._bins import Bump, Strategy
 from tsresample._prefs import Bias, draw, preference
-
-Strategy = Literal["under", "over", "smote"]
 
 
 def trunc(x: float) -> int:
@@ -30,6 +27,19 @@ def round_even(x: float) -> int:
     return round(x)  # Python's round is half-to-even, like R's
 
 
+def check_ou(strategy: Strategy, o: float | None, u: float | None) -> None:
+    """Validate R's ``C.perc`` pair for ``strategy`` (SPEC §4.4)."""
+    if strategy == "under" and o is not None:
+        raise ValueError("o applies to rare bumps (over, smote); under takes u only.")
+    if strategy == "over" and u is not None:
+        raise ValueError("u applies to normal bumps (under, smote); over takes o only.")
+    if strategy == "over" and o is not None and o < 1:
+        raise ValueError(f"over: expected o >= 1 (R rejects smaller); got o={o}.")
+    for name, v in (("o", o), ("u", u)):
+        if v is not None and v < 0:
+            raise ValueError(f"{strategy}: expected {name} >= 0; got {name}={v}.")
+
+
 def ratios(
     bumps: list[Bump],
     N: int,
@@ -38,11 +48,7 @@ def ratios(
     u: float | None,
 ) -> list[float]:
     """Per-bump multiplier ``c_B`` of SPEC §4.4 (1.0 means "keep whole")."""
-    if strategy == "over" and o is not None and o < 1:
-        raise ValueError(f"over: expected o >= 1 (R rejects smaller); got o={o}.")
-    for name, v in (("o", o), ("u", u)):
-        if v is not None and v < 0:
-            raise ValueError(f"{strategy}: expected {name} >= 0; got {name}={v}.")
+    check_ou(strategy, o, u)
     rare = [b for b in bumps if b.rare]
     normal = [b for b in bumps if b.normal]
     n_r = sum(len(b.idx) for b in rare)
@@ -79,8 +85,12 @@ def targets(
     u: float | None,
 ) -> list[int]:
     """Output size of each bump after resampling (SPEC §4.4, §4.5 counts)."""
+    return _counts(bumps, ratios(bumps, N, strategy, o, u), strategy)
+
+
+def _counts(bumps: list[Bump], cs: list[float], strategy: Strategy) -> list[int]:
     out = []
-    for b, c in zip(bumps, ratios(bumps, N, strategy, o, u), strict=True):
+    for b, c in zip(bumps, cs, strict=True):
         size = len(b.idx)
         if strategy == "over":
             out.append(size + trunc(c * size))  # originals kept, copies appended
@@ -114,10 +124,8 @@ def resample(
     """
     parts: list[NDArray[np.intp]] = []
     jobs: list[tuple[Bump, float]] = []
-    counts = targets(bumps, N, strategy, o, u)
-    for b, c, n_out in zip(
-        bumps, ratios(bumps, N, strategy, o, u), counts, strict=True
-    ):
+    cs = ratios(bumps, N, strategy, o, u)
+    for b, c, n_out in zip(bumps, cs, _counts(bumps, cs, strategy), strict=True):
         size = len(b.idx)
         if strategy == "over":
             p = preference(b, time_index, phi, bias)

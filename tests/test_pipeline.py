@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 from tsresample import _relevance, embed
+from tsresample.metrics import sera
 from tsresample.pipeline import (
     evaluate,
     imbalance_summary,
@@ -246,3 +247,54 @@ def test_load_series_sorts_mixed_date_formats(tmp_path: Path) -> None:
     np.testing.assert_array_equal(
         load_series(_csv(tmp_path, rows), target="value", date_col="date"), [1, 2, 3]
     )
+
+
+def test_imbalance_summary_rejects_missing_values() -> None:
+    with pytest.raises(ValueError, match="NaN"):
+        imbalance_summary([1.0, 2.0, 100.0, float("nan")])
+
+
+def test_unparseable_cells_are_reported_not_imputed(tmp_path: Path) -> None:
+    p = _csv(
+        tmp_path, [("2020-01-01", "1"), ("2020-01-02", "1,234"), ("2020-01-03", "x")]
+    )
+    with pytest.raises(ValueError, match=r"2 non-numeric.*'1,234'"):
+        load_series(p, target="value")
+
+
+def test_knn_on_a_series_shorter_than_the_window_names_the_fix(tmp_path: Path) -> None:
+    p = _csv(tmp_path, [(f"2020-01-0{i + 1}", "" if i == 3 else "1") for i in range(7)])
+    with pytest.raises(ValueError, match="gap-free window of 10"):
+        load_series(p, target="value")
+
+
+def test_pipeline_without_pandas_says_how_to_install_it() -> None:
+    import subprocess
+    import sys
+
+    code = (
+        "import sys; sys.modules['pandas'] = None\n"
+        "try:\n    import tsresample.pipeline\n"
+        "except ImportError as e:\n    print(e)"
+    )
+    out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert 'pip install "tsresample[io]"' in out.stdout, out.stderr
+
+
+def test_evaluate_draws_independent_resampling_seeds_per_split() -> None:
+    from sklearn.linear_model import LinearRegression
+
+    from tsresample import TimeSeriesResampler
+
+    X, y = _ds01_embedded()
+    split = next(temporal_split(X, y, n_reps=1, random_state=0))
+    df = evaluate(
+        LinearRegression(),
+        X,
+        y,
+        strategies={"s": TimeSeriesResampler("smote")},
+        metrics={"sera": sera},
+        splitter=lambda X, y: iter([split, split]),
+    )
+    a, b = df["value"].tolist()  # same split twice: only the seed differs
+    assert a != b

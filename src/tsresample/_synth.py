@@ -18,14 +18,20 @@ from tsresample._prefs import Bias
 
 
 def _neighbours(X: NDArray[np.float64], k: int) -> NDArray[np.intp]:
-    # Row i: the k nearest other rows, nearest first; ties to the lowest index
-    # (stable sort over row order). cdist is exact per pair, so ties stay ties.
-    # ponytail: O(r^2) time in 1024-row chunks; a KD-tree if bumps reach ~1e5 rows.
+    # Row i: the k nearest other rows, nearest first; ties to the lowest index.
+    # Exact per-pair distances (cdist) in row chunks; per row only the candidates
+    # within the k-th smallest distance are sorted (stable, so ties keep index
+    # order). Chunks hold ~16M distances (128 MB, plus the partition copy).
+    # ponytail: O(r^2) time; a KD-tree if rare bumps reach ~1e5-1e6 rows.
     out = np.empty((len(X), k), dtype=np.intp)
-    for lo in range(0, len(X), 1024):
-        d = cdist(X[lo : lo + 1024], X)
+    rows = max(1, 2**24 // len(X))
+    for lo in range(0, len(X), rows):
+        d = cdist(X[lo : lo + rows], X)
         d[np.arange(len(d)), np.arange(lo, lo + len(d))] = np.inf
-        out[lo : lo + 1024] = np.argsort(d, axis=1, kind="stable")[:, :k]
+        kth = np.partition(d, k - 1, axis=1)[:, k - 1 : k]
+        for i, row in enumerate(d):
+            cand = np.flatnonzero(row <= kth[i])
+            out[lo + i] = cand[np.argsort(row[cand], kind="stable")[:k]]
     return out
 
 
@@ -59,41 +65,32 @@ def synthesize(
     k_eff = r - 1 if r <= k else k
     nn = _neighbours(X[search], k_eff)
 
-    def choose(s: int) -> int:
-        cand = nn[s]
-        if bias is None:  # Alg. 4: uniform
-            return int(cand[rng.randint(k_eff)])
-        if bias == "temporal":  # Alg. 9: most recent (largest T_t position)
-            return int(cand.max())
-        # Alg. 13: recency tau relative to the most recent candidate, times phi
-        # of the candidate read in time order; argmax ties -> nearer (ADR-0013).
-        tau = (cand + 1.0) / (cand.max() + 1.0)
-        return int(cand[np.argmax(tau * phi[t_t[cand]])])
-
     nexs = math.floor(c - 1)
     extra = math.floor(r * (c - 1 - nexs))
-    plan = [s for s in range(r) for _ in range(nexs)]
-    plan += rng.choice(r, size=extra, replace=False).tolist()
-    xs, ys, seeds = [], [], []
-    for s in plan:
-        seed, other = read[s], read[choose(s)]
-        lam = rng.uniform()
-        x_new = X[seed] + lam * (X[other] - X[seed])
-        if r_quirks:  # weights from the most recent lag, column 0 (ADR-0013)
-            d1 = abs(X[seed, 0] - x_new[0])
-            d2 = abs(X[other, 0] - x_new[0])
-        else:
-            d1 = float(np.linalg.norm(X[seed] - x_new))
-            d2 = float(np.linalg.norm(X[other] - x_new))
-        if d1 == d2:  # also R's NaN case (zero column range): midpoint
-            y_new = (y[seed] + y[other]) / 2
-        else:
-            y_new = (d2 * y[seed] + d1 * y[other]) / (d1 + d2)
-        xs.append(x_new)
-        ys.append(y_new)
-        seeds.append(seed)
-    return (
-        np.array(xs, dtype=np.float64).reshape(-1, X.shape[1]),
-        np.array(ys, dtype=np.float64),
-        np.array(seeds, dtype=np.intp),
+    # Every seed position makes nexs cases, then `extra` distinct seeds one more.
+    plan = np.concatenate(
+        [np.repeat(np.arange(r), nexs), rng.choice(r, size=extra, replace=False)]
     )
+    cand = nn[plan]
+    if bias is None:  # Alg. 4: uniform among the k
+        pick = cand[np.arange(len(plan)), rng.randint(k_eff, size=len(plan))]
+    elif bias == "temporal":  # Alg. 9: most recent (largest T_t position)
+        pick = cand.max(axis=1)
+    else:  # Alg. 13: recency tau relative to the most recent candidate, times phi
+        # read in time order; argmax ties -> the nearer neighbour (ADR-0013).
+        tau = (cand + 1.0) / (cand.max(axis=1, keepdims=True) + 1.0)
+        pick = cand[np.arange(len(plan)), np.argmax(tau * phi[t_t[cand]], axis=1)]
+    seed, other = read[plan], read[pick]
+    lam = rng.uniform(size=(len(plan), 1))  # one lambda per synthetic case
+    x_new = X[seed] + lam * (X[other] - X[seed])
+    if r_quirks:  # weights from the most recent lag, column 0 (ADR-0013)
+        d1 = np.abs(X[seed, 0] - x_new[:, 0])
+        d2 = np.abs(X[other, 0] - x_new[:, 0])
+    else:
+        d1 = np.linalg.norm(X[seed] - x_new, axis=1)
+        d2 = np.linalg.norm(X[other] - x_new, axis=1)
+    with np.errstate(invalid="ignore"):  # d1 = d2 = 0 is the midpoint branch
+        weighted = (d2 * y[seed] + d1 * y[other]) / (d1 + d2)
+    # d1 == d2, including R's NaN case (zero column range): the midpoint.
+    y_new = np.where(d1 == d2, (y[seed] + y[other]) / 2, weighted)
+    return x_new, y_new, seed

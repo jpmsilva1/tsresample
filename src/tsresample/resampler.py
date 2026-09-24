@@ -95,6 +95,7 @@ class TimeSeriesResampler(BaseEstimator):  # type: ignore[misc]
         check_choice("bias", self.bias, (None, "temporal", "temporal+phi"))
         if not (isinstance(self.k, int | np.integer) and self.k >= 1):
             raise ValueError(f"k: expected an integer >= 1; got {self.k!r}.")
+        _sample.check_ou(self.strategy, self.o, self.u)
         phi = _relevance.resolve(self.relevance, ya)
         found = _bins.bumps(ya, phi, self.rel_threshold, self.strategy)
         if not found:

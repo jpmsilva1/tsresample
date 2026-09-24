@@ -6,7 +6,7 @@ from typing import Literal, NamedTuple
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
-Rule = Literal["under", "over", "smote"]
+Strategy = Literal["under", "over", "smote"]
 
 
 class Bump(NamedTuple):
@@ -22,7 +22,7 @@ class Bump(NamedTuple):
     normal: bool
 
 
-def bumps(y: ArrayLike, phi: ArrayLike, t_R: float, rule: Rule) -> list[Bump]:
+def bumps(y: ArrayLike, phi: ArrayLike, t_R: float, rule: Strategy) -> list[Bump]:
     """Partition cases into bumps in value space (SPEC §4.2, ADR-0012).
 
     Cases are sorted by ``y`` (stable) and cut where phi crosses ``t_R``:

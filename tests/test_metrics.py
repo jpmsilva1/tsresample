@@ -92,3 +92,9 @@ def test_worst_possible_forecast_of_a_rare_case_scores_zero() -> None:
 def test_control_point_phi_must_lie_in_unit_interval() -> None:
     with pytest.raises(ValueError, match=r"\[0, 1\]"):
         sera([0.0, 1.0], [0.0, 1.0], relevance=np.array([[-1, 2.0], [0, 0], [1, 1]]))
+
+
+@pytest.mark.parametrize("step", [0.0, -0.1, 0.3, 1.5])
+def test_sera_step_must_divide_the_unit_interval(step: float) -> None:
+    with pytest.raises(ValueError, match="step"):
+        sera([0.0, 1.0], [0.0, 1.0], relevance=CP, step=step)

@@ -124,6 +124,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         if args.coef != 1.5:
             raise ValueError("--coef: only 1.5 is supported (see docs/MIGRATION.md)")
+        if args.k < 0:
+            raise ValueError(f"--k: expected k >= 0; got {args.k}")
         if args.config and args.csv_path:
             raise ValueError("provide either a CSV path or --config, not both")
         if args.config:
@@ -145,7 +147,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             ]
         else:
             raise ValueError("provide a CSV path or --config")
-    except ValueError as e:
+    except (ValueError, OSError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
     table = pd.DataFrame(rows)

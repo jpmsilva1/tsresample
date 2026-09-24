@@ -119,3 +119,20 @@ def test_invalid_input_raises_in_fit_resample(
 ) -> None:
     with pytest.raises(ValueError, match=match):
         TimeSeriesResampler(**kwargs).fit_resample(X, y)
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "match"),
+    [
+        ({"strategy": "over", "o": 0.1}, "o >= 1"),
+        ({"strategy": "under", "o": 2.0}, "o applies to"),
+        ({"strategy": "over", "u": 0.5}, "u applies to"),
+        ({"strategy": "smote", "u": -1.0}, "u >= 0"),
+    ],
+)
+def test_o_and_u_are_validated_even_when_nothing_would_be_resampled(
+    kwargs: dict, match: str
+) -> None:
+    X, y = np.zeros((10, 2)), np.ones(10)  # constant y: no bumps at all
+    with pytest.raises(ValueError, match=match):
+        TimeSeriesResampler(**kwargs).fit_resample(X, y)

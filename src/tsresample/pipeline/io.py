@@ -42,7 +42,15 @@ def load_series(
         df = df.sort_values(
             date_col, kind="stable", key=lambda c: pd.to_datetime(c, format="mixed")
         )
-    s = pd.to_numeric(df[target], errors="coerce").to_numpy(dtype=np.float64)
+    raw = df[target]
+    s = pd.to_numeric(raw, errors="coerce").to_numpy(dtype=np.float64)
+    bad = raw[np.isnan(s) & raw.notna().to_numpy()]
+    if len(bad):
+        raise ValueError(
+            f"column {target!r} has {len(bad)} non-numeric value(s), e.g. "
+            f"{bad.astype(str).head(3).tolist()}; fix the file (thousands separators, "
+            "decimal commas) or leave missing cells empty."
+        )
     s = _impute(s, impute)
     return np.diff(s) if diff else s
 
@@ -74,6 +82,8 @@ def _knn_fill(s: NDArray[np.float64]) -> NDArray[np.float64]:
     with no observed lag are dropped with a warning. Donors come from the
     original series: that reproduces DS12's 10.99 %Rare (filled donors: 9.33).
     """
+    if len(s) <= _WINDOW:
+        raise ValueError("impute='knn' needs at least one gap-free window of 10.")
     frame = np.lib.stride_tricks.sliding_window_view(s, _WINDOW + 1)
     donors = frame[~np.isnan(frame).any(axis=1)]
     if len(donors) == 0:

@@ -137,11 +137,17 @@ def sera(
     ``t`` in [0, 1] on a uniform grid of spacing ``step`` (trapezoidal rule).
     With ``return_curve=True`` returns ``(t, SER_t)`` instead.
     """
+    n_steps = round(1 / step) if 0 < step <= 1 else 0
+    if n_steps == 0 or abs(n_steps * step - 1) > 1e-9:
+        raise ValueError(f"sera: step must be 1/m for an integer m >= 1; got {step}.")
     y, yh = _pair(y_true, y_pred)
     phi_y = _relevance.resolve(relevance, y)
-    t = np.linspace(0.0, 1.0, round(1 / step) + 1)
-    err = (y - yh) ** 2
-    ser = np.array([err[phi_y >= ti].sum() for ti in t])
+    t = np.linspace(0.0, 1.0, n_steps + 1)
+    # SER_t = sum of squared errors over phi >= t: sort by phi once, then read
+    # suffix sums at each threshold (O(n log n) instead of O(n / step)).
+    order = np.argsort(phi_y)
+    suffix = np.concatenate([np.cumsum(((y - yh) ** 2)[order][::-1])[::-1], [0.0]])
+    ser = suffix[np.searchsorted(phi_y[order], t, side="left")]
     if return_curve:
         return t, ser
     return float(trapezoid(ser, t))

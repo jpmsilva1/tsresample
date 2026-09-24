@@ -229,8 +229,9 @@ metrics : name -> ``f(y_true, y_pred, *, relevance=cp)``. Default:
     ``precision_phi``, ``recall_phi``, ``f1_phi``, ``sera``.
 splitter : ``f(X, y)`` yielding ``(X_train, y_train, X_test, y_test)``.
     Default: ``temporal_split(X, y, random_state=random_state)`` (50 reps).
-random_state : seeds the default splitter and every resampler that has
-    none, so a run is reproducible.
+random_state : seeds the default splitter, and one stream from which every
+    resampler without its own seed draws a fresh one per split, so a run is
+    reproducible and splits stay independent.
 
 Returns
 -------

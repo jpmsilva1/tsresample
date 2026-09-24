@@ -7,7 +7,14 @@ from collections.abc import Callable, Iterator, Mapping
 from typing import Any
 
 import numpy as np
-import pandas as pd
+
+try:
+    import pandas as pd
+except ImportError:  # pragma: no cover - exercised in a subprocess test
+    raise ImportError(
+        "tsresample.pipeline and the tsresample CLI need pandas: "
+        'pip install "tsresample[io]"'
+    ) from None
 from numpy.typing import ArrayLike
 from sklearn.base import clone
 
@@ -36,6 +43,11 @@ def imbalance_summary(
     ya = np.asarray(y, dtype=np.float64).ravel()
     if len(ya) < 2:
         raise ValueError(f"imbalance_summary: need at least 2 values; got {len(ya)}.")
+    if not np.isfinite(ya).all():
+        raise ValueError(
+            "imbalance_summary: y contains NaN or inf; impute or drop them first "
+            "(load_series does)."
+        )
     n_rare = int((_relevance.resolve(relevance, ya) >= rel_threshold).sum())
     n_normal = len(ya) - n_rare
     return {
@@ -83,8 +95,9 @@ def evaluate(
         ``precision_phi``, ``recall_phi``, ``f1_phi``, ``sera``.
     splitter : ``f(X, y)`` yielding ``(X_train, y_train, X_test, y_test)``.
         Default: ``temporal_split(X, y, random_state=random_state)`` (50 reps).
-    random_state : seeds the default splitter and every resampler that has
-        none, so a run is reproducible.
+    random_state : seeds the default splitter, and one stream from which every
+        resampler without its own seed draws a fresh one per split, so a run is
+        reproducible and splits stay independent.
 
     Returns
     -------
@@ -100,6 +113,7 @@ def evaluate(
         if splitter is not None
         else temporal_split(X, y, random_state=random_state)
     )
+    rng = np.random.RandomState(random_state)  # one stream: independent draws
     rows = []
     for i, (X_tr, y_tr, X_te, y_te) in enumerate(splits):
         cp = _relevance.control_points(y_tr)
@@ -108,7 +122,7 @@ def evaluate(
             if resampler is not None:
                 r = clone(resampler).set_params(relevance=cp)
                 if r.random_state is None:
-                    r.set_params(random_state=random_state)
+                    r.set_params(random_state=rng.randint(2**31 - 1))
                 Xf, yf = r.fit_resample(X_tr, y_tr)
             pred = clone(estimator).fit(Xf, yf).predict(X_te)
             for metric, f in metrics.items():

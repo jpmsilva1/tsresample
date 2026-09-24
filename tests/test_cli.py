@@ -111,3 +111,11 @@ def test_impute_modes_are_exposed(tmp_path: Path) -> None:
     )
     res = _run(p, "--target", "value", "--no-embed", "--impute", "drop")
     assert res.returncode == 0 and res.stdout.splitlines()[1].split()[2] == "9"
+
+
+def test_bad_k_and_missing_files_exit_2_with_a_message(tmp_path: Path) -> None:
+    p = _csv(tmp_path, ["1", "2", "3"])
+    res = _run(p, "--target", "value", "--k", "-5")
+    assert res.returncode == 2 and "--k" in res.stderr
+    res = _run(tmp_path / "missing.csv", "--target", "value")
+    assert res.returncode == 2 and "missing.csv" in res.stderr

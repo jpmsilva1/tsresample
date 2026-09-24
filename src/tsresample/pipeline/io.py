@@ -38,7 +38,10 @@ def load_series(
                 f"column {col!r} not found in {path}; available: {list(df.columns)}"
             )
     if date_col is not None:
-        df = df.sort_values(date_col, kind="stable", key=pd.to_datetime)
+        # format="mixed": exports often write midnight as a bare date (DS21-24)
+        df = df.sort_values(
+            date_col, kind="stable", key=lambda c: pd.to_datetime(c, format="mixed")
+        )
     s = pd.to_numeric(df[target], errors="coerce").to_numpy(dtype=np.float64)
     s = _impute(s, impute)
     return np.diff(s) if diff else s

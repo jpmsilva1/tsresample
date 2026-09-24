@@ -39,7 +39,7 @@ Rows in the same wave can run in parallel sessions.
 | 9a | Pipeline I/O | 8 | 7 | Done (2026-09-24, @jpmsilva1) | local branch `node/9a-pipeline-io`; CSV->series->embed round-trip hand-checked; G3 DS12 kNN %Rare 10.99 (mean-imputation mutation fails it); contiguous non-shuffled Monte Carlo splits with the recorded sizes; ADR-0010 amendment (donor rows); no pandas in Layer 1 (gate A); 243 tests, 100 % cov; inline self-review |
 | 9b | Pipeline API | 9 | 8, 9a | Done (2026-09-24, @jpmsilva1) | local branch `node/9b-pipeline-api`; tidy frame one row per (strategy, split, metric); phi refit per training window (test-phi mutation caught); imbalance_summary uses >= (ADR-0010) and matches Table 1 at MAE <= 0.25 pp on 18 datasets, no count shift vs imbalance_eval's rule; evaluate gained random_state (SPEC §2.4); 249 tests, 100 % cov; inline self-review |
 | 10 | CLI + `MIGRATION.md` | 10 | 9b | Done (2026-09-24, @jpmsilva1) | local branch `node/10-cli`; CLI mirrors imbalance_eval flags + manifest; --k translates 1:1 (DS01 N=720); usage errors exit 2 with messages; docs/MIGRATION.md lists every behavioural difference; 255 tests, 100 % cov; inline self-review |
-| 11 | Replication (gate G4 + `replication_report.md`) | 10 | 8, 9b | Not started | |
+| 11 | Replication (gate G4 + `replication_report.md`) | 10 | 8, 9b | Done (2026-09-24, @jpmsilva1) | local branch `node/11-replication`; `replication_report.md`: R4 10800/10800 exact, R2 96.2 %, R3 95.0 %, R5 9/9 strategies match (paper conclusion reproduced), R1 mean 0.880 but DS19 0.467 < 0.6 (reported, open item); lm learner, r_quirks=True; found and fixed a mixed-date-format bug in load_series |
 | 12 | Docs | 11 | 10 | Not started | |
 | 13 | Release | 12 | 0, 11, 12 | Not started | |
 
@@ -54,6 +54,7 @@ Known issues that don't block any step. Close one by stating the resolution and 
 | DS13 imputation | Lag-window kNN gives 9.19–10.67 % rare vs the paper's 11.1 %. G4 excludes DS13 from strict checks. | ADR-0010 amendment; `Blueprint/docs/REPLICATION.md` §4.2b |
 | `[AUDIT]`-tagged SPEC items | Bins, counts, bias, SMOTE, replacement. Each is confirmed by its node's G3/G4 check. | ADR-0012, 0013; amended 0004/0006/0007 |
 | Gate C command hardcodes the floor | `Blueprint/ops/QUALITY_GATES.md` §3 writes `--cov-fail-under=90`, contradicting §1 ("stated once", read from `pyproject.toml`). CI reads `fail_under` from `pyproject.toml`; the §3 text should drop the flag. Found in step 1 review. | `Blueprint/ops/QUALITY_GATES.md` §3 |
+| G4 R1 per-dataset floor fails on DS19 | ρ = 0.467 < 0.6 (mean over datasets 0.880 passes). DS19's nine strategy means span 0.028 against a 0.011 standard error, and ρ moves 0.19-0.56 with the split seed alone; R2-R5 hold. DS19 also carries the ADR-0014 φ = (1, 0, 0) residual. Not fixed by changing tolerance; closing it needs either the ADR-0014 residual resolved or an ADR on noise-limited rankings. Found in step 11. | `replication_report.md`; `Blueprint/docs/REPLICATION.md` §4.2 |
 
 ## Rules
 

@@ -234,3 +234,15 @@ def test_evaluate_refits_phi_on_each_training_window() -> None:
     for cp, (_, y_tr, _, y_te) in zip(seen, splits, strict=True):
         np.testing.assert_array_equal(cp, _relevance.control_points(y_tr))
         assert not np.array_equal(cp, _relevance.control_points(y_te))
+
+
+def test_load_series_sorts_mixed_date_formats(tmp_path: Path) -> None:
+    # Half-hourly exports write midnight as a bare date (DS21-24).
+    rows = [
+        ("1999-01-01 01:00:00", "3"),
+        ("1999-01-01", "1"),
+        ("1999-01-01 00:30:00", "2"),
+    ]
+    np.testing.assert_array_equal(
+        load_series(_csv(tmp_path, rows), target="value", date_col="date"), [1, 2, 3]
+    )

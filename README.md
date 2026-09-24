@@ -50,4 +50,4 @@ stop and open an issue rather than working around it.
 | `.claude/agents/` | The four agent roles (`implementer`, `researcher`, `reviewer`, `replicator`), auto-discovered by Claude Code. With other tools, use them as role prompts. |
 | `.github/` | PR checklist template and code owners. |
 
-Library code (`src/`, `tests/`, `pyproject.toml`) arrives at the repo root in step 1.
+Library code (`src/`, `tests/`, `pyproject.toml`) lives at the repo root.

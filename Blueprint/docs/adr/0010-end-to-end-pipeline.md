@@ -106,3 +106,18 @@ difference.
 **3. φ corroboration.** `imbalance_eval`'s φ (via iblr, black-box tested) reproduces R's
 per-split control points in **85/90** splits, the same as SPEC v0.8.0 §4.1, and `%Rare` to
 0.169 pp. It was right before the SPEC was; v0.7.0 had cited it while specifying fences.
+
+## Amendment — step 9a (2026-09-24): which rows are donors
+
+SPEC §2.4 leaves open whether rows completed by earlier fills become donors. Probed
+against the recorded numbers (CLAUDE.md research procedure):
+
+| donors | standardisation | DS12 %Rare | DS13 %Rare |
+|---|---|---|---|
+| originally fully observed rows | original frame, `ddof` 0 or 1 | **10.99** | 9.19 |
+| rows of the progressively filled series | either | 9.33 | 9.19 |
+
+The first reproduces the amendment's 10.99 (paper 11.0), so donors are the rows of the
+**original** series with no gap; earlier fills still count as observed in the *query*
+window. SDs use R's `sd` (`ddof = 1`); the choice does not move either number. The
+manifest reader moves to step 10, the only consumer (batch CLI mode).

@@ -76,7 +76,7 @@ files = ["src"]
 
 [[tool.mypy.overrides]]
 # Neither ships type information; adding stub packages is not worth a dev dep.
-module = ["scipy.*", "sklearn.*"]
+module = ["scipy.*", "sklearn.*", "pandas.*"]
 ignore_missing_imports = true
 
 [tool.ruff]

@@ -41,3 +41,13 @@ def test_degenerate_control_points_give_zero_phi_with_warning() -> None:
     np.testing.assert_array_equal(cp, [[2, 0], [2, 0], [2, 1]])
     with pytest.warns(UserWarning, match="strictly increasing"):
         np.testing.assert_array_equal(_relevance.phi(y, cp), np.zeros(5))
+
+
+def test_control_points_drop_nans_and_reject_all_nan_input() -> None:
+    # Same worked example as above with NaNs mixed in: NaNs are dropped first.
+    y = np.array([4, 1, np.nan, 9, 2, 100, 3, 8, 5, 7, 6, np.nan])
+    np.testing.assert_array_equal(
+        _relevance.control_points(y), [[1.0, 0.0], [5.5, 0.0], [9.0, 1.0]]
+    )
+    with pytest.raises(ValueError, match="no non-NaN values"):
+        _relevance.control_points([np.nan, np.nan])

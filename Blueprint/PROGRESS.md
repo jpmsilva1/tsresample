@@ -28,7 +28,7 @@ Rows in the same wave can run in parallel sessions.
 |---|---|---|---|---|---|
 | 0 | **Setup (maintainer)**: PyPI Trusted Publishing configured for `tsresample`; branch protection on `main` (PRs required, code-owner review) | 0 | — | Not started | |
 | 1 | Scaffold | 1 | P5 | Done (2026-09-24, @jpmsilva1) | local branch `node/1-scaffold`; gates L, T, A, C green (27 tests, 100 % cov); reviewer: merge after fixes, fixes applied |
-| 2a | φ (`_relevance.py`, gate G0) | 2 | 1 | Not started | |
+| 2a | φ (`_relevance.py`, gate G0) | 2 | 1 | In progress (2026-09-24, @jpmsilva1) | |
 | 2b | Embedding (`embed.py`) | 2 | 1 | Not started | |
 | 3 | Bumps (`_bins.py`) | 3 | 2a | Not started | |
 | 4 | Preferences (`_prefs.py`) | 4 | 3 | Not started | |

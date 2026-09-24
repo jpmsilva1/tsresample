@@ -470,7 +470,8 @@ normal total, and only smote aims every bump at `N / #bumps`.
   documented extension.
 
 **Size properties.** `under` never grows the data, `over` never shrinks it and retains
-every original case, and `smote` satisfies `|len(out) − N| ≤ 2·#bumps`.
+every original case, and `smote` satisfies `|len(out) − N| ≤ 2·#bumps + Σ_{|B|=1} |B* − 1|`
+(single-case bumps are kept at 1; ADR-0015).
 
 ### 4.5 Synthetic case generation (`_synth.py`) — Algorithms 4 / 9 / 13, ADR-0013
 

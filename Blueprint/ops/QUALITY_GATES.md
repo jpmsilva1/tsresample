@@ -44,6 +44,7 @@ testing effort lands on the critical paths rather than on every private helper.
 | `_prefs.preference(bump, time_index, phi, bias) -> ndarray` (within-bump time rank) | direct | normalisation helper |
 | `_prefs.draw(p, size, replace, rng) -> ndarray` (added in step 4: the too-few-positive fallback of SPEC §4.3 needs a draw to test) | direct | — |
 | `_sample.targets(bumps, N, strategy, o, u) -> list[int]` | direct | the `trunc` / `round5` / `round_even` helpers alone |
+| `_sample.resample(bumps, N, strategy, o, u, time_index, phi, bias, rng) -> (idx, smote jobs)` (added in step 5: performs the draws so `resampler.py` stays arithmetic-free) | direct | — |
 | `_synth.synthesize(..., r_quirks) -> (X_new, y_new)` | direct, both `r_quirks` settings | distance helper |
 | `TimeSeriesResampler.fit_resample(X, y)` | public call | dispatch internals |
 | `metrics.{precision_phi,recall_phi,f1_phi,sera}` | public call | `_utility` internals |

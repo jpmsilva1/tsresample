@@ -29,7 +29,7 @@ silently. If you believe the spec is wrong, say so and stop — do not implement
 version of it.
 
 **2 — Ambiguity is resolved by ADR, never by judgement.** The paper is ambiguous, and
-differs from the R code, in many places (SPEC §0). Every one has an ADR (0001–0014). If you
+differs from the R code, in many places (SPEC §0). Every one has an ADR (0001–0015). If you
 hit a new one, **stop and write ADR-00NN** before writing the code. An implementer who resolves an ambiguity quietly has
 produced an unreviewable result, because the next reader cannot tell a decision from an
 accident.

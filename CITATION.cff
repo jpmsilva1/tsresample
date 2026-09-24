@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: >-
+  If you use tsresample, please cite the paper whose algorithms it implements
+  (preferred-citation) and this software.
+title: tsresample
+type: software
+authors:
+  - given-names: João P. M.
+    family-names: Silva
+license: MIT
+repository-code: "https://github.com/jpmsilva1/tsresample"
+keywords:
+  - imbalanced regression
+  - time series
+  - resampling
+  - SMOTE
+preferred-citation:
+  type: article
+  title: Resampling strategies for imbalanced time series forecasting
+  authors:
+    - given-names: Nuno
+      family-names: Moniz
+    - given-names: Paula
+      family-names: Branco
+    - given-names: Luís
+      family-names: Torgo
+  journal: International Journal of Data Science and Analytics
+  volume: 3
+  issue: 3
+  start: 161
+  end: 181
+  year: 2017
+  doi: 10.1007/s41060-017-0044-3

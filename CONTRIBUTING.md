@@ -4,6 +4,37 @@ This project is built by a maintainer (@jpmsilva1) and collaborators, each usual
 working with an AI agent. The rules below keep parallel work from colliding and keep the
 repo in a state any newcomer, human or agent, can pick up cold.
 
+## Start here (humans and agents)
+
+(Moved from the README in step 12.)
+
+Every session, in this order:
+
+1. **[`Blueprint/PROGRESS.md`](Blueprint/PROGRESS.md):** what is done, when, by whom, and
+   what is next. Take your step from here, and claim it before starting (see
+   `CONTRIBUTING.md`). Don't rely on memory or old notes.
+2. **[`CONTRIBUTING.md`](CONTRIBUTING.md):** how to claim a step, and the branch, commit
+   and PR rules.
+3. **[`Blueprint/CLAUDE.md`](Blueprint/CLAUDE.md):** the standing engineering rules: the
+   spec is the contract, ambiguity is resolved by ADR, cleanroom, numbers come from
+   oracles, TDD, one step per session. They apply whichever agent you use.
+4. **[`Blueprint/docs/SPEC.md`](Blueprint/docs/SPEC.md) §0 and
+   [ADR-0011](Blueprint/docs/adr/0011-r-algorithm-fidelity.md):** which natural-looking
+   formulas are wrong, and why R's behaviour is the default.
+5. **Your step's brief** in [`Blueprint/ops/TASK_GRAPH.md`](Blueprint/ops/TASK_GRAPH.md),
+   plus the SPEC sections and ADRs it names.
+   [`Blueprint/ops/KICKOFF.md`](Blueprint/ops/KICKOFF.md) has ready-made prompts for the
+   first steps.
+6. **Before opening any external code,** check
+   [`Blueprint/docs/PROVENANCE.md`](Blueprint/docs/PROVENANCE.md) §1. Several reference
+   implementations are GPL and quarantined.
+7. **Finish** by meeting the definition of done in
+   [`Blueprint/ops/QUALITY_GATES.md`](Blueprint/ops/QUALITY_GATES.md) §4 and updating
+   `Blueprint/PROGRESS.md` in the same PR.
+
+If the repo contradicts itself (a path that doesn't resolve, two different tolerances),
+stop and open an issue rather than working around it.
+
 ## The workflow for one step
 
 1. **Pick.** Open `Blueprint/PROGRESS.md`. Your step is the first row whose status is

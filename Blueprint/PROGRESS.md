@@ -54,6 +54,7 @@ Known issues that don't block any step. Close one by stating the resolution and 
 | DS13 imputation | Lag-window kNN gives 9.19–10.67 % rare vs the paper's 11.1 %. G4 excludes DS13 from strict checks. | ADR-0010 amendment; `Blueprint/docs/REPLICATION.md` §4.2b |
 | `[AUDIT]`-tagged SPEC items | Bins, counts, bias, SMOTE, replacement. Each is confirmed by its node's G3/G4 check. | ADR-0012, 0013; amended 0004/0006/0007 |
 | Gate C command hardcodes the floor | `Blueprint/ops/QUALITY_GATES.md` §3 writes `--cov-fail-under=90`, contradicting §1 ("stated once", read from `pyproject.toml`). CI reads `fail_under` from `pyproject.toml`; the §3 text should drop the flag. Found in step 1 review. | `Blueprint/ops/QUALITY_GATES.md` §3 |
+| G4 R1 per-dataset floor fails on DS19 | ρ = 0.467 < 0.6 (mean over datasets 0.880 passes). DS19's nine strategy means span 0.028 against a 0.011 standard error, and ρ moves 0.19-0.56 with the split seed alone; R2-R5 hold. DS19 also carries the ADR-0014 φ = (1, 0, 0) residual. Not fixed by changing tolerance; closing it needs either the ADR-0014 residual resolved or an ADR on noise-limited rankings. Found in step 11. | `replication_report.md`; `Blueprint/docs/REPLICATION.md` §4.2 |
 
 ## Rules
 

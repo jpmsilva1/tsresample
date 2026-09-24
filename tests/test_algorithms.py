@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from tsresample import _bins, _prefs, _relevance
+from tsresample import _bins, _prefs, _relevance, _sample
 
 
 def test_control_points_use_tukey_hinges_and_whisker_ends() -> None:
@@ -159,3 +159,110 @@ def test_draw_follows_p_and_honours_replacement() -> None:
     np.testing.assert_array_equal(got, [1] * 5)
     got = _prefs.draw(np.array([0.5, 0.5, 0.0]), 2, replace=False, rng=rng)
     assert sorted(got.tolist()) == [0, 1]
+
+
+# --- target counts (SPEC §4.4, ADR-0004/0006/0007 amendments) ---------------------
+def _bump(size: int, rare: bool, start: int) -> _bins.Bump:
+    return _bins.Bump(np.arange(start, start + size), rare=rare, normal=not rare)
+
+
+# N = 20: low-rare |2|, normal |15|, high-rare |3|. n_R = 5, n_U = 15, |U| = 1, |R| = 2.
+BUMPS_20 = [_bump(2, True, 0), _bump(15, False, 2), _bump(3, True, 17)]
+
+
+@pytest.mark.parametrize(
+    ("strategy", "expected"),
+    [
+        # normal c = round5((5 / 1) / 15) = 0.33333; trunc(0.33333 * 15 = 4.99995) = 4
+        ("under", [2, 4, 3]),
+        # low: c = round5(7.5 / 2) = 3.75 -> +trunc(7.5) = 7 -> 9
+        # high: c = round5(7.5 / 3) = 2.5 -> +trunc(7.5) = 7 -> 10
+        ("over", [9, 15, 10]),
+        # B* = round_even(20 / 3) = 7. low c = 3.5: nexs 2, extra floor(2 * 0.5) = 1
+        # -> 2 + 4 + 1 = 7. normal c = 7/15 -> trunc(7.0) = 7. high c = 7/3: nexs 1,
+        # extra floor(3 * (7/3 - 1 - 1)) = floor(1.0000000000000004) = 1 -> 7.
+        ("smote", [7, 7, 7]),
+    ],
+)
+def test_balance_targets_per_strategy(strategy: str, expected: list[int]) -> None:
+    assert _sample.targets(BUMPS_20, 20, strategy, None, None) == expected  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    ("strategy", "o", "u", "expected"),
+    [
+        ("under", None, 0.5, [2, 7, 3]),  # normal: trunc(0.5 * 15) = 7
+        ("under", None, 1.2, [2, 15, 3]),  # c >= 1 keeps the bump whole
+        ("over", 2.0, None, [6, 15, 9]),  # + trunc(2 * 2) = 4, + trunc(2 * 3) = 6
+        # smote: rare c = o = 2.5 -> low: nexs 1, extra floor(2 * 0.5) = 1 -> 2+2+1 = 5
+        # high: nexs 1, extra floor(3 * 0.5) = 1 -> 3+3+1 = 7; normal u = 0 -> 0.
+        ("smote", 2.5, 0.0, [5, 0, 7]),
+    ],
+)
+def test_explicit_o_and_u_replace_the_balance_ratio(
+    strategy: str, o: float | None, u: float | None, expected: list[int]
+) -> None:
+    assert _sample.targets(BUMPS_20, 20, strategy, o, u) == expected  # type: ignore[arg-type]
+
+
+def test_over_rejects_o_below_one() -> None:
+    with pytest.raises(ValueError, match="o >= 1"):
+        _sample.targets(BUMPS_20, 20, "over", 0.5, None)
+
+
+def _run(strategy: str, bias: str | None = None, **kw: float) -> tuple:
+    phi = np.where(np.isin(np.arange(20), [0, 1, 17, 18, 19]), 1.0, 0.3)
+    return _sample.resample(
+        BUMPS_20,
+        20,
+        strategy,
+        kw.get("o"),
+        kw.get("u"),  # type: ignore[arg-type]
+        np.arange(20),
+        phi,
+        bias,
+        np.random.RandomState(0),  # type: ignore[arg-type]
+    )
+
+
+def test_under_keeps_rare_and_draws_normal_without_replacement() -> None:
+    idx, jobs = _run("under", "temporal")
+    assert jobs == []
+    normal = [i for i in idx.tolist() if 2 <= i < 17]
+    assert len(normal) == 4 and len(set(normal)) == 4  # trunc(4.99995), distinct
+    assert {0, 1, 17, 18, 19} <= set(idx.tolist()) and len(idx) == 9
+
+
+def test_over_retains_every_original_and_appends_rare_copies() -> None:
+    idx, jobs = _run("over", "temporal+phi")
+    assert jobs == []
+    assert len(idx) == 34 and set(range(20)) <= set(idx.tolist())
+    extra = sorted(idx.tolist())
+    for i in range(20):
+        extra.remove(i)
+    assert len(extra) == 14 and set(extra) <= {0, 1, 17, 18, 19}
+
+
+def test_smote_undersamples_normal_with_replacement_and_queues_synthesis() -> None:
+    idx, jobs = _run("smote", None, u=1.0, o=3.0)  # explicit: u = 1 keeps normal
+    assert [(j[0].idx.tolist(), j[1]) for j in jobs] == [
+        ([0, 1], 3.0),
+        ([17, 18, 19], 3.0),
+    ]
+    assert set(idx.tolist()) == set(range(20))  # originals kept; synthesis is node 6
+    idx, _ = _run("smote", None, u=0.5, o=3.0)
+    normal = [i for i in idx.tolist() if 2 <= i < 17]
+    assert len(normal) == 7  # trunc(0.5 * 15), drawn with replacement
+
+
+def test_smote_bump_size_rounds_half_to_even() -> None:
+    # N = 21, 2 bumps: B* = round_even(10.5) = 10 (half-up would give 11).
+    # rare |6|: c = 10/6, nexs 0, extra floor(6 * (10/6 - 1)) = 4 -> 6 + 4 = 10.
+    # normal |15|: c = 10/15 -> trunc(10.0) = 10.
+    bumps = [_bump(6, True, 0), _bump(15, False, 6)]
+    assert _sample.targets(bumps, 21, "smote", None, None) == [10, 10]
+
+
+def test_negative_o_or_u_is_rejected() -> None:
+    with pytest.raises(ValueError, match="expected u >= 0"):
+        _sample.targets(BUMPS_20, 20, "under", None, -0.1)

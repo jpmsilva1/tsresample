@@ -22,7 +22,7 @@ class Bump(NamedTuple):
     normal: bool
 
 
-def bumps(y: ArrayLike, phi: ArrayLike, t_R: float, rule: Rule) -> list[Bump]:  # noqa: N803
+def bumps(y: ArrayLike, phi: ArrayLike, t_R: float, rule: Rule) -> list[Bump]:
     """Partition cases into bumps in value space (SPEC §4.2, ADR-0012).
 
     Cases are sorted by ``y`` (stable) and cut where phi crosses ``t_R``:

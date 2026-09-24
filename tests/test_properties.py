@@ -5,7 +5,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from tsresample import _bins, embed
+from tsresample import _bins, _sample, embed
 
 
 @given(
@@ -55,3 +55,45 @@ def test_bumps_partition_the_value_sorted_order(
     assert np.all(np.diff(y[flat]) >= 0)  # value order, not time order
     if rule == "over":  # each bump lies wholly on one side of t_R
         assert all(len(set((phi[b.idx] >= 0.9).tolist())) == 1 for b in bs)
+
+
+@given(
+    sizes=st.lists(st.integers(1, 40), min_size=2, max_size=5),
+    rare_first=st.booleans(),
+    seed=st.integers(0, 2**31 - 1),
+)
+def test_sample_sizes_follow_each_strategy(
+    sizes: list[int], rare_first: bool, seed: int
+) -> None:
+    # Alternating rare/normal bumps over positions 0..N-1, like real value-space bumps.
+    bumps, start = [], 0
+    for i, s in enumerate(sizes):
+        rare = (i % 2 == 0) == rare_first
+        bumps.append(_bins.Bump(np.arange(start, start + s), rare, not rare))
+        start += s
+    n = start
+    t, phi = np.arange(n), np.full(n, 0.5)
+    for strategy in ("under", "over", "smote"):
+        idx, jobs = _sample.resample(
+            bumps,
+            n,
+            strategy,
+            None,
+            None,
+            t,
+            phi,
+            "temporal",  # type: ignore[arg-type]
+            np.random.RandomState(seed),
+        )
+        total = sum(_sample.targets(bumps, n, strategy, None, None))  # type: ignore[arg-type]
+        if strategy == "under":
+            assert len(idx) == total <= n
+        elif strategy == "over":
+            assert len(idx) == total >= n and set(range(n)) <= set(idx.tolist())
+        else:
+            # ADR-0015: single-case bumps stay at 1 instead of moving to B*.
+            b_star = round(n / len(bumps))
+            slack = sum(abs(b_star - 1) for b in bumps if len(b.idx) == 1)
+            assert abs(total - n) <= 2 * len(bumps) + slack
+            synth = sum(len(b.idx) * (c - 1) for b, c in jobs)
+            assert len(idx) <= total and synth >= 0

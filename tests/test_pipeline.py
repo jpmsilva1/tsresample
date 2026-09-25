@@ -169,7 +169,9 @@ def test_imbalance_summary_matches_paper_table_1() -> None:
     import json
 
     oracle = json.loads(
-        (DATA.parent.parent / "tests" / "fixtures" / "phi_oracle.json").read_text()
+        (DATA.parent.parent / "tests" / "fixtures" / "phi_oracle.json").read_text(
+            encoding="utf-8"
+        )
     )["datasets"]
     err = []
     for ds, d in oracle.items():

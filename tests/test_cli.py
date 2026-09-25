@@ -5,7 +5,7 @@ import csv
 import io
 import shutil
 import subprocess
-import sys
+import sysconfig
 from pathlib import Path
 
 from tsresample.pipeline.cli import main
@@ -22,7 +22,8 @@ def _run(*args: object) -> subprocess.CompletedProcess[str]:
 
 
 def test_installed_console_script_runs(tmp_path: Path) -> None:
-    exe = shutil.which("tsresample", path=str(Path(sys.executable).parent))
+    # Scripts dir: bin/ on POSIX, Scripts\ on Windows (not next to python.exe).
+    exe = shutil.which("tsresample", path=sysconfig.get_path("scripts"))
     assert exe, "console script not installed next to the interpreter"
     p = _csv(tmp_path, ["4", "1", "9", "2", "100", "3", "8", "5", "7", "6"])
     res = subprocess.run(
@@ -77,7 +78,7 @@ def test_batch_manifest_and_output_file(tmp_path: Path) -> None:
     out_csv = tmp_path / "out.csv"
     res = _run("--config", m, "--no-embed", "--output", out_csv)
     assert res.returncode == 0, res.stderr
-    rows = list(csv.DictReader(out_csv.open()))
+    rows = list(csv.DictReader(out_csv.open(encoding="utf-8")))
     assert [r["ID"] for r in rows] == ["A", "B"] and rows[0]["n_rare"] == "2"
 
 

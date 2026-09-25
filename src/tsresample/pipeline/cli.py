@@ -14,6 +14,7 @@ from collections.abc import Sequence
 
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 
 from tsresample.pipeline import imbalance_summary, load_series
 
@@ -64,7 +65,7 @@ def _row(
     id_: str,
     name: str,
     gran: str,
-    s: np.ndarray,
+    s: NDArray[np.float64],
     k: int,
     thr: float,
     args: argparse.Namespace,
@@ -85,7 +86,7 @@ def _row(
 
 def _load(
     path: str, target: str, date_col: str | None, args: argparse.Namespace
-) -> np.ndarray:
+) -> NDArray[np.float64]:
     impute = None if args.impute == "none" else args.impute
     return load_series(
         path, target=target, date_col=date_col, diff=args.diff, impute=impute

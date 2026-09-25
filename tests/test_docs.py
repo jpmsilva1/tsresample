@@ -17,7 +17,9 @@ API_PAGE = REPO / "docs" / "api.md"
 def test_readme_python_examples_run(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    blocks = re.findall(r"```python\n(.*?)```", (REPO / "README.md").read_text(), re.S)
+    blocks = re.findall(
+        r"```python\n(.*?)```", (REPO / "README.md").read_text(encoding="utf-8"), re.S
+    )
     assert blocks, "README has no python examples"
     monkeypatch.chdir(tmp_path)  # examples write their own CSV
     for code in blocks:
@@ -81,7 +83,7 @@ def test_api_reference_matches_docstrings() -> None:
 
 
 def test_citation_file_names_the_paper_and_licence() -> None:
-    cff = (REPO / "CITATION.cff").read_text()
+    cff = (REPO / "CITATION.cff").read_text(encoding="utf-8")
     for needle in (
         "cff-version:",
         "title: tsresample",
@@ -93,7 +95,7 @@ def test_citation_file_names_the_paper_and_licence() -> None:
 
 
 def test_deviations_page_lists_every_r_over_paper_choice() -> None:
-    page = (REPO / "docs" / "deviations.md").read_text()
+    page = (REPO / "docs" / "deviations.md").read_text(encoding="utf-8")
     for adr in ("0004", "0006", "0007", "0011", "0012", "0013", "0015", "0016"):
         assert f"adr/{adr}" in page, adr
     assert "r_quirks=False" in page

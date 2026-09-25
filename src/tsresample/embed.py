@@ -50,7 +50,7 @@ def embed(
     The equivalent call here is ``embed(series, k=m - 2, horizon=1)``: ``k + 1``
     predictors, so ``k = m - 2``. The paper's ``create.data(ts, 10)`` is
     ``embed(series, k=8, horizon=1)``, whose targets are ``series[9:]``.
-    See Blueprint/docs/adr/0005-embed-convention.md (and its amendment).
+    See ADR-0005 (and its amendment) in the project documentation.
 
     Examples
     --------

@@ -204,7 +204,7 @@ What must hold, in order of strength:
 
 | # | Assertion | Tolerance |
 |---|---|---|
-| R1 | **Ranking.** Per dataset, the Spearman correlation between our mean-`F1φ` ranking of the 10 workflows and the recorded ranking. | ρ ≥ 0.7, and ≥ 0.6 on every individual dataset |
+| R1 | **Ranking.** Per dataset, the Spearman correlation between our mean-`F1φ` ranking of the 10 workflows and the recorded ranking. | ρ ≥ 0.7 mean, and ≥ 0.6 on every dataset whose recorded strategy means are resolvable (spread ≥ 1.96·√2 × SE; ADR-0017) |
 | R2 | **Direction.** For every `(dataset, strategy)` where the recorded run shows resampling beating baseline on `F1φ`, ours does too. | ≥ 85 % agreement |
 | R3 | **Location.** Per `(dataset, workflow)`, our median `F1φ` sits inside the recorded interquartile range. | ≥ 75 % of cells |
 | R4 | **Row counts.** Resampled training-set sizes equal the SPEC §4.4 counts for the split's bumps (under shrinks to the rare total, over grows by the normal total, smote `|len − N| ≤ 2·#bumps`). | exact |

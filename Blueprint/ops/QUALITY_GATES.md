@@ -19,7 +19,7 @@ which meant neither number was real.
 | G0 Test B — `%Rare` vs paper, embedded target | ≤ **0.25 pp** MAE across the 18 NA-free datasets; ≤ 2.5 pp worst case |
 | G0 Test C — one-sided φ (DS10) | exact |
 | G0b — metrics vs recorded values | `1e-6` relative (`sera` at `step=0.01`, two-sided splits only), `1e-6` absolute (prec/rec/F1) |
-| G4 R1 — ranking correlation | Spearman ρ ≥ 0.7 mean, ≥ 0.6 per dataset |
+| G4 R1 — ranking correlation | Spearman ρ ≥ 0.7 mean, ≥ 0.6 per dataset whose strategy means are resolvable (spread ≥ 1.96·√2 × SE; ADR-0017) |
 | G4 R2 — direction agreement | ≥ 85 % |
 | G4 R3 — median inside recorded IQR | ≥ 75 % of cells |
 | G4 R4 — resampled row count | exact: equals SPEC §4.4 counts (smote: `|len − N| ≤ 2·#bumps`) |

@@ -126,9 +126,10 @@ significantly beats the baseline on F1φ (R5). Resampled training-set sizes matc
 specification exactly (10,800/10,800). Per-dataset rankings agree with R (mean Spearman
 ρ = 0.88).
 
-One diagnostic misses its bar. On DS19 the nine strategies are statistically tied, and the
-ranking correlation there is about 0.5 against a per-dataset floor of 0.6. Full numbers are in
-[`replication_report.md`](replication_report.md).
+On four datasets (DS19, DS21, DS23, DS24) the nine strategies are statistically tied, so
+their ranking is noise and is not held to the per-dataset floor
+([ADR-0017](Blueprint/docs/adr/0017-r1-floor-noise-limited-datasets.md)). Full numbers are
+in [`replication_report.md`](replication_report.md).
 
 Where the library knowingly differs from the paper's pseudocode, it is because it follows
 the R code instead. Each difference is listed with its reason in

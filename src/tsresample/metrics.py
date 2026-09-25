@@ -149,5 +149,5 @@ def sera(
     suffix = np.concatenate([np.cumsum(((y - yh) ** 2)[order][::-1])[::-1], [0.0]])
     ser = suffix[np.searchsorted(phi_y[order], t, side="left")]
     if return_curve:
-        return t, ser
+        return np.asarray(t, dtype=np.float64), np.asarray(ser, dtype=np.float64)
     return float(trapezoid(ser, t))

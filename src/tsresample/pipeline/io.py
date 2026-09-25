@@ -64,7 +64,7 @@ def _impute(s: NDArray[np.float64], how: Impute) -> NDArray[np.float64]:
             "impute='knn' or impute='drop'."
         )
     if how == "drop":
-        return s[~np.isnan(s)]
+        return np.asarray(s[~np.isnan(s)], dtype=np.float64)
     return _knn_fill(s)
 
 
@@ -113,4 +113,4 @@ def _knn_fill(s: NDArray[np.float64]) -> NDArray[np.float64]:
             UserWarning,
             stacklevel=3,
         )
-    return out[~np.isnan(out)]
+    return np.asarray(out[~np.isnan(out)], dtype=np.float64)

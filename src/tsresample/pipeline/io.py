@@ -80,7 +80,7 @@ def _knn_fill(s: NDArray[np.float64]) -> NDArray[np.float64]:
     means and SDs, find the k nearest *originally* fully observed rows on the
     observed lags, and fill with their targets weighted exp(-d). Leading gaps
     with no observed lag are dropped with a warning. Donors come from the
-    original series: that reproduces DS12's 10.99 %Rare (filled donors: 9.33).
+    original series, never from earlier fills (ADR-0010 amendment).
     """
     if len(s) <= _WINDOW:
         raise ValueError("impute='knn' needs at least one gap-free window of 10.")

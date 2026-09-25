@@ -50,14 +50,15 @@ from tsresample.metrics import control_points, f1_phi
 # A heavy-tailed series: mostly ordinary values, a few extreme ones.
 series = np.random.RandomState(0).standard_t(3, size=600)
 
-X, y = embed(series, k=8)                     # 9 lagged values -> next value
+X, y = embed(series, k=8)  # 9 lagged values -> next value
 X_train, y_train, X_test, y_test = X[:400], y[:400], X[400:], y[400:]
 
-cp = control_points(y_train)                  # what counts as "rare", fit on train only
+cp = control_points(y_train)  # what counts as "rare", fit on train only
 resampler = TimeSeriesResampler("smote", "temporal", relevance=cp, random_state=0)
 X_res, y_res = resampler.fit_resample(X_train, y_train)
 
-for name, (Xf, yf) in {"baseline": (X_train, y_train), "SMOTE-T": (X_res, y_res)}.items():
+runs = {"baseline": (X_train, y_train), "SMOTE-T": (X_res, y_res)}
+for name, (Xf, yf) in runs.items():
     pred = LinearRegression().fit(Xf, yf).predict(X_test)
     print(f"{name:9s} F1phi = {f1_phi(y_test, pred, relevance=cp):.3f}")
 ```
@@ -93,12 +94,15 @@ dates = pd.date_range("2020-01-01", periods=500, freq="D")
 values = np.random.RandomState(1).standard_t(3, size=500)
 pd.DataFrame({"date": dates, "demand": values}).to_csv("demand.csv", index=False)
 
-series = load_series("demand.csv", target="demand", date_col="date")  # gaps: lag-window kNN
-print(imbalance_summary(series))              # N, n_normal, n_rare, IR, pct_rare
+# Missing values are filled by lag-window kNN.
+series = load_series("demand.csv", target="demand", date_col="date")
+print(imbalance_summary(series))  # N, n_normal, n_rare, IR, pct_rare
 
 X, y = embed(series, k=8)
 results = evaluate(
-    LinearRegression(), X, y,
+    LinearRegression(),
+    X,
+    y,
     splitter=lambda X, y: temporal_split(X, y, n_reps=5, random_state=0),
 )
 print(results.groupby(["strategy", "metric"])["value"].mean().unstack().round(3))

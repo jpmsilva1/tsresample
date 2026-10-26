@@ -27,7 +27,6 @@ target weights, and time order throughout. The counts and the other rows stay as
 | Situation | R | `tsresample` | ADR |
 |---|---|---|---|
 | No rare bump or no normal bump | `stop()` | Returns the input unchanged with a `UserWarning` | [0011](../Blueprint/docs/adr/0011-r-algorithm-fidelity.md) |
-| Degenerate φ control points (e.g. IQR = 0) | the spline constructor errors | φ ≡ 0 with a `UserWarning`, so nothing is resampled | [0011](../Blueprint/docs/adr/0011-r-algorithm-fidelity.md) |
 | SMOTE target column with zero range | NaN | Midpoint of seed and neighbour | [0011](../Blueprint/docs/adr/0011-r-algorithm-fidelity.md) |
 | Too few positive-probability cases for a draw without replacement | error | Takes all of them, fills the rest uniformly, and warns | [0011](../Blueprint/docs/adr/0011-r-algorithm-fidelity.md) |
 | A bump of one case under smote | — | Kept as is; the size bound allows for it | [0015](../Blueprint/docs/adr/0015-smote-size-property-singleton-bumps.md) |

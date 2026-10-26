@@ -4,7 +4,6 @@ SPEC §4.1; ADR-0001, ADR-0002.
 """
 
 import math
-import warnings
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
@@ -54,15 +53,7 @@ def phi(y: ArrayLike, cp: NDArray[np.float64]) -> NDArray[np.float64]:
     y = np.asarray(y, dtype=np.float64)
     (x_lo, p_lo), (med, _), (x_hi, p_hi) = cp
     if not x_lo < med < x_hi:
-        # R's spline constructor raises here; we degrade to "nothing is rare"
-        # (documented robustness deviation, SPEC §4.1, ADR-0011).
-        warnings.warn(
-            f"phi: control-point x = ({x_lo}, {med}, {x_hi}) is not strictly "
-            "increasing (e.g. IQR = 0 with no outliers); phi is 0 everywhere.",
-            UserWarning,
-            stacklevel=2,
-        )
-        return np.zeros_like(y)
+        return _phi_tied_knots(y, cp)
     spline = CubicHermiteSpline([x_lo, med, x_hi], [p_lo, 0.0, p_hi], np.zeros(3))
     # Exact endpoint values and the clip are both required: scipy can return
     # 1 - 4e-16 at the knot, which drops cases out of SERA's t = 1 grid point
@@ -71,6 +62,26 @@ def phi(y: ArrayLike, cp: NDArray[np.float64]) -> NDArray[np.float64]:
     out: NDArray[np.float64] = np.where(
         y <= x_lo, p_lo, np.where(y >= x_hi, p_hi, inside)
     )
+    return out
+
+
+def _phi_tied_knots(
+    y: NDArray[np.float64], cp: NDArray[np.float64]
+) -> NDArray[np.float64]:
+    """phi when knots share an x (e.g. IQR = 0, or median = min), as R's ``uba``.
+
+    Each value takes the segment of the last knot <= it, so a value on a tied
+    knot gets the later knot's phi; zero-slope Hermite (smoothstep) on any
+    segment of positive width; constant beyond the outer knots (ADR-0011
+    amendment).
+    """
+    xs, ps = cp[:, 0], cp[:, 1]
+    i = np.searchsorted(xs, y, side="right") - 1
+    j = np.clip(i, 0, 1)
+    width = xs[j + 1] - xs[j]
+    t = np.clip((y - xs[j]) / np.where(width > 0, width, 1.0), 0.0, 1.0)
+    inner = ps[j] + (ps[j + 1] - ps[j]) * (3 * t**2 - 2 * t**3)
+    out: NDArray[np.float64] = np.where(i < 0, ps[0], np.where(i >= 2, ps[2], inner))
     return out
 
 

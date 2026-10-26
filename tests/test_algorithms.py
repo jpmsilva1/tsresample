@@ -31,16 +31,39 @@ def test_phi_is_smoothstep_between_knots_and_exact_constant_beyond() -> None:
     np.testing.assert_array_equal(phi[[0, 1, 2, 3, 6, 7]], [0, 0, 0, 0, 1, 1])
 
 
-def test_degenerate_control_points_give_zero_phi_with_warning() -> None:
-    # y = 2, 2, 2, 2, 5: hinges Q1 = med = Q3 = 2, IQR = 0, so 5 is an outlier and
-    # the whisker ends are both 2. Low side has nothing below 2 -> (2, 0); high
-    # side -> (2, 1). x = (2, 2, 2) is not strictly increasing: R's spline raises;
-    # we return phi = 0 everywhere and warn (SPEC §4.1 "Degenerate inputs").
-    y = np.array([2.0, 2.0, 5.0, 2.0, 2.0])
+# R uba 0.7.7, recorded 2026-10-26:
+#   round(phi(y, phi.parms = phi.control(y, method = "extremes", coef = 1.5)), 12)
+# Tied knots do not make R raise: it keeps them, and a value takes the segment
+# of the last knot <= it.
+TIED_KNOTS_R = [
+    (
+        [2, 2, 5, 2, 2],
+        [1, 1, 1, 1, 1],
+    ),  # IQR = 0, an outlier above: every value at the tied knots is rare
+    ([3, 3, 3, 3, 3, 3], [0] * 6),  # constant series: nothing is rare
+    ([0, 0, 0, 0, 0, 0, 0.3, 0.5, 0.9, 0.4], [0] * 10),  # median = min, no outlier
+    ([0] * 10 + [1, 2, 0, 0, 5], [1] * 15),  # median = min = whiskers, outliers above
+    ([1] * 20 + [1.5, 1, 1], [1] * 23),
+    ([-5, 1, 1, 1, 1, 1, 1, 2, 3], [1] * 9),  # outliers on both sides of a tied middle
+]
+
+
+@pytest.mark.parametrize(("y", "want"), TIED_KNOTS_R)
+def test_tied_control_points_follow_r_uba(y: list[float], want: list[float]) -> None:
+    y = np.asarray(y, dtype=np.float64)
+    np.testing.assert_array_equal(_relevance.phi(y, _relevance.control_points(y)), want)
+
+
+def test_median_equal_to_min_with_a_rare_high_tail_keeps_the_smooth_rise() -> None:
+    # knots (0, 0), (0, 0), (hi, 1): values above 0 rise along the smoothstep
+    y = np.array([0.0] * 30 + list(np.linspace(0.1, 1.0, 10)) + [9.0])
     cp = _relevance.control_points(y)
-    np.testing.assert_array_equal(cp, [[2, 0], [2, 0], [2, 1]])
-    with pytest.warns(UserWarning, match="strictly increasing"):
-        np.testing.assert_array_equal(_relevance.phi(y, cp), np.zeros(5))
+    assert cp[0, 0] == cp[1, 0] == 0.0 and cp[2, 1] == 1.0
+    p = _relevance.phi(y, cp)
+    t = np.clip(y / cp[2, 0], 0, 1)
+    np.testing.assert_allclose(
+        p, np.where(y >= cp[2, 0], 1.0, 3 * t**2 - 2 * t**3), rtol=0, atol=1e-12
+    )
 
 
 def test_control_points_drop_nans_and_reject_all_nan_input() -> None:

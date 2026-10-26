@@ -387,11 +387,14 @@ the upper knot and `−2.2e-16` near the median. That drops cases out of the `t 
 - **Do not use `np.percentile`** for the quartiles, and do not place control points at the
   fences. v0.7.0 did both and matched R's control points in 4 of 54 splits.
 
-**Degenerate inputs.** If the three control-point `x` values are not strictly increasing
-(e.g. `IQR == 0` with no outliers, or `min(y) == med`), R's spline constructor raises. The
-library instead sets φ ≡ 0 and emits a `UserWarning`, and `fit_resample` returns its input
-unchanged (§4.4 "no-bump rule"). This is a documented robustness deviation, since R
-produces no result there. It must be tested.
+**Tied control points.** When two or three control-point `x` values coincide (e.g.
+`IQR == 0`, or `min(y) == med`), R's `uba` does not raise: it keeps the tied knots, and each
+value takes the segment of the **last knot ≤ it**, so a value sitting on a tied knot gets the
+later knot's φ. The library does the same (zero-slope Hermite on any segment of positive
+width, constant beyond the outer knots). A series with `IQR == 0` and an outlier therefore
+scores every value rare, exactly as R does; `fit_resample` then finds no normal bump and
+returns its input unchanged (§4.4 "no-bump rule"). Tested against recorded `uba` 0.7.7
+output (ADR-0011 amendment, 2026-10-26).
 
 **Fit scope.** φ is fit on exactly the `y` handed in, never on a wider sample (ADR-0008).
 
